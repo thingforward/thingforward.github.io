@@ -5,7 +5,71 @@
   <id>http://blog.url.com/blog</id>
   <link href="http://blog.url.com/blog"/>
   <link href="http://blog.url.com/feed.xml" rel="self"/>
+  <updated>2016-09-28T02:00:00+02:00</updated>
   <author>
     <name>Blog Author</name>
   </author>
+  <entry>
+    <title>Embedded Developers vs. Web Developers: some figures</title>
+    <link rel="alternate" href="http://blog.url.com/blog/2016/09/28/embedded-developers-vs-web-developers-some-figures.html"/>
+    <id>http://blog.url.com/blog/2016/09/28/embedded-developers-vs-web-developers-some-figures.html</id>
+    <published>2016-09-28T02:00:00+02:00</published>
+    <updated>2016-09-30T11:56:55+02:00</updated>
+    <author>
+      <name>Article Author</name>
+    </author>
+    <content type="html">&lt;p&gt;As we were doing some research we asked ourselves: How many skilled developers are ready to lead the way in the new era of IoT? Somebody has to implements all these billions of devices in a targeted way. Who are these people? And where are they hiding?&lt;/p&gt;
+
+&lt;p&gt;We found two research studies. The first one is mentioned in &lt;a href="https://adtmag.com/Blogs/WatersWorks/2014/01/Worldwide-Developer-Count.aspx"&gt;a blog post&lt;/a&gt; from John K. Waters, citing the "2014 Worldwide Software Developer and ICT-Skilled Worker Estimates" report from IDC. We did not order the complete study, but John cites that there are 18.5 million software developers around the world, and about 11 million of those are professionals.&lt;/p&gt;
+
+&lt;p&gt;That does not reveal the exact area of work, i.e., whether they are developing desktop applications, for the web or for mobile. But it did give us a real number of the overall community of developers.&lt;/p&gt;
+
+&lt;p&gt;How many of those developers actually do embedded software development? Recent figures were hard to find. We did find a Slideshare presentation from a webcast of VDC Research (vdcresearch.com) about &lt;a href="http://de.slideshare.net/vdcresearch/searching-for-the-total-size-of-the-embedded-software-engineering-market"&gt;The total size of the embedded software engineering market&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Slide #9 estimates the world wide number of embedded engineers at 880,000 for the year 2010, with a year-to-year growth rate of approx. seven percent. Calculating this further to 2014 (making the comparison to the IDC figures above) would yield approximately 1.16 millions embedded engineers.&lt;/p&gt;
+
+&lt;p&gt;Consequently, the number of professionals able to design and build IoT products is very likely to be much lower than, for example, those able to build web applications. Now building for embedded is truly different from building for the web, for a number of reasons as outlined in this &lt;a href="https://www.linkedin.com/pulse/5-differences-between-embedded-maharajan"&gt;Linked In article by the Electronic news&lt;/a&gt;, and in &lt;a href="http://www.embedded.com/electronics-news/4438618/10-skills-embedded-engineers-need-now"&gt;another post here&lt;/a&gt;:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Knowledge of underlying hardware and embedded operating systems&lt;/li&gt;
+  &lt;li&gt;Control of software flow, scheduling and threading (and lack there-of)&lt;/li&gt;
+  &lt;li&gt;Different programming languages&lt;/li&gt;
+  &lt;li&gt;Testing and debugging, and much more&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Can web developers adopt a system engineering mindset? Will small devices be capable of hosting “web” services? Will they run dynamic, scripted languages? Would you want to learn C or C++ to code for embedded devices or rather wait for more convenient languages?&lt;/p&gt;
+
+&lt;p&gt;Tell us what you think!
+Andreas&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
+    <title>ThingForward.io: Blog Kick-off</title>
+    <link rel="alternate" href="http://blog.url.com/blog/2016/09/26/thingforward-io-blog-kick-off.html"/>
+    <id>http://blog.url.com/blog/2016/09/26/thingforward-io-blog-kick-off.html</id>
+    <published>2016-09-26T02:00:00+02:00</published>
+    <updated>2016-09-30T11:59:54+02:00</updated>
+    <author>
+      <name>Article Author</name>
+    </author>
+    <content type="html">
+&lt;p&gt;Every blog has to start with a first post, so this one kicks off our blog journey into the software development of IoT – bringing together software development patterns from the Internet world and the world of Things!&lt;/p&gt;
+
+&lt;p&gt;We really started this journey back in 2014 when we started designing and developing software for small, embedded devices. It was like a trip back in time. The majority of embedded IoT devices we came across were really “constrained”: small, 32-bit MCUs with only a few hundred KBs or at most 1-2 MBs of Flash, and sometimes even less SRAM to work with.&lt;/p&gt;
+
+&lt;p&gt;Given the equipment and configuration of chip modules, using C or C++ was and still is the primary way to program these devices. Of course there are a number of projects aiming to bring scripted languages such as JS and Python in the pipeline, but coding for professional products at the moment is still most likely done in plain C or C++. However, when it comes to optimization (whether for speed or battery consumption), the results can be quite sub-standard. It reminds me of the phrase “security by obscurity”, where you hide things with the aim of making your solution more secure - because nobody understands how to access it. As you might imagine, this is not very fruitful. When I look at highly optimized C code, I can see a lot of similarities.&lt;/p&gt;
+
+&lt;p&gt;Unfortunately, this kind of optimization makes a number of things worse, i.e., when writing unit tests for your code, or even when trying to integrate new team members to the stack. Coming from the software development for the web world, we were used to having fully automated build and integration testing systems, with code using third party libraries from the OSS sphere, each one with its documentation and unit tests and so forth.
+Now, developing for the embedded world, we find ourselves once again thrown back to an ancient IT era, where many things still need to be done manually.&lt;/p&gt;
+
+&lt;p&gt;Our primary concern is about communication within the Internet of Things. In this (probably exponentially) growing network, devices need to be able to communicate with each other. This not only includes the capabilities to “speak” the same radio protocol (WiFi, ZigBee, LoRa, etc), but also touches on other aspects of the software application layer: Protocols and Data Formats, covering layers 5 to 7 of the OSI stack.&lt;/p&gt;
+
+&lt;p&gt;Our aim is to improve software development for the latter aspects. We feel that IoT solutions need to be open and compatible when it comes to data communication. We want to give IoT developers and IoT architects valuable tools that help them simplify their embedded projects and thus speed up their development lifecycles.&lt;/p&gt;
+
+&lt;p&gt;In this blog we’re going to explore technical issues around embedded software development, testing devices, creating service layers and using embedded protocols and data formats. We hope we’re able to deliver valuable assets for IoT and embedded developers. Let us know what you think!&lt;/p&gt;
+
+&lt;p&gt;Best,
+Andreas and Oliver&lt;/p&gt;
+</content>
+  </entry>
 </feed>

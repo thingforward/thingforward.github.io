@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>ThingForward </title>
+    <title>ThingForward  - ThingForward.io: Blog Kick-off</title>
     <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="/blog/feed.xml" />
 
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300" rel="stylesheet">
@@ -73,36 +73,49 @@
 
     <!-- Page Content -->
     <div class="container">
-
         <div class="row">
-<div class="col-md-8">
-<h3>Let’s do things right. </h3>
-<p>Everybody knows that IoT is the next big thing. But has anybody ever tried to build things?
-</p>
-<p>
-When we started working on IoT in 2014 we felt like being shifted back in the dark middle age of software design.
-Devices are handcrafted by the high priest of native C who are jealousy covering their secrets.
-An uncountable number of so called standards are being used to protect the existing claims.
-Security is widely neglected. Quality is a gamble. Agility is a foreign word. At the bottom line
-technological advance of at least 20 years Internet seems to be ignored in IoT software development.
-</p>
-<p>
-ThingForward is our approach to improve software development for IoT. We want to build things and services
-simpler, faster, better and maintainable. We want to be open and transparent. We want to create direct
-value for the professional software developers of IoT. We embrace your contribution.
-</p>
-<p>
-Since we believe that value is often created from the small we decided to define and work on projects
-covering specific IoT aspects. You are already looking on our first project which is the <a href="/blog.html">&rarr; ThingForward blog</a>.
-We will use it to share our experiences with you. Hopefully, preventing you from some of the mistakes
-we have already made. Please feel free to comment our posts or to suggest any improvement.
-We know that we are far away from something fancy. Thank you for your engagement.
-</p>
-<p>
-Andreas, Oliver
-</p>
-</div>
-  
+
+            <!-- Blog Entries Column -->
+            <div class="col-md-8">
+
+                <h1 class="page-header" class="posttitle">
+			              ThingForward.io: Blog Kick-off
+                </h1>
+                <p class="lead">
+                      by <a href="https://twitter.com/aschmidt75">Andreas</a>
+                </p>
+                <p><span class="glyphicon glyphicon-time"></span> Posted on Sep 26</p>
+
+		                
+<p>Every blog has to start with a first post, so this one kicks off our blog journey into the software development of IoT – bringing together software development patterns from the Internet world and the world of Things!</p>
+
+<p>We really started this journey back in 2014 when we started designing and developing software for small, embedded devices. It was like a trip back in time. The majority of embedded IoT devices we came across were really “constrained”: small, 32-bit MCUs with only a few hundred KBs or at most 1-2 MBs of Flash, and sometimes even less SRAM to work with.</p>
+
+<p>Given the equipment and configuration of chip modules, using C or C++ was and still is the primary way to program these devices. Of course there are a number of projects aiming to bring scripted languages such as JS and Python in the pipeline, but coding for professional products at the moment is still most likely done in plain C or C++. However, when it comes to optimization (whether for speed or battery consumption), the results can be quite sub-standard. It reminds me of the phrase “security by obscurity”, where you hide things with the aim of making your solution more secure - because nobody understands how to access it. As you might imagine, this is not very fruitful. When I look at highly optimized C code, I can see a lot of similarities.</p>
+
+<p>Unfortunately, this kind of optimization makes a number of things worse, i.e., when writing unit tests for your code, or even when trying to integrate new team members to the stack. Coming from the software development for the web world, we were used to having fully automated build and integration testing systems, with code using third party libraries from the OSS sphere, each one with its documentation and unit tests and so forth.
+Now, developing for the embedded world, we find ourselves once again thrown back to an ancient IT era, where many things still need to be done manually.</p>
+
+<p>Our primary concern is about communication within the Internet of Things. In this (probably exponentially) growing network, devices need to be able to communicate with each other. This not only includes the capabilities to “speak” the same radio protocol (WiFi, ZigBee, LoRa, etc), but also touches on other aspects of the software application layer: Protocols and Data Formats, covering layers 5 to 7 of the OSI stack.</p>
+
+<p>Our aim is to improve software development for the latter aspects. We feel that IoT solutions need to be open and compatible when it comes to data communication. We want to give IoT developers and IoT architects valuable tools that help them simplify their embedded projects and thus speed up their development lifecycles.</p>
+
+<p>In this blog we’re going to explore technical issues around embedded software development, testing devices, creating service layers and using embedded protocols and data formats. We hope we’re able to deliver valuable assets for IoT and embedded developers. Let us know what you think!</p>
+
+<p>Best,
+Andreas and Oliver</p>
+
+
+                <!-- go back -->
+                <ul class="pager">
+                    <li class="previous">
+                        <a href="#" onClick="history.go(-1); return false;">&larr; Back</a>
+                    </li>
+                </ul>
+
+            </div>
+
+            
             <!-- Blog Sidebar Widgets Column -->
             <div class="col-md-4">
 
@@ -149,37 +162,32 @@ Andreas, Oliver
 
             </div>
 
-<div class="col-md-8">
-  <hr>
-  <div class="panel panel-default" id="wufoo-zfzmdxd1tuscc0">
-    Fill out my <a href="https://thingforwardio.wufoo.com/forms/zfzmdxd1tuscc0">online form</a>.
-  </div>
-  <script type="text/javascript">var zfzmdxd1tuscc0;(function(d, t) {
-    var s = d.createElement(t), options = {
-    'userName':'thingforwardio',
-    'formHash':'zfzmdxd1tuscc0',
-    'autoResize':true,
-    'height':'437',
-    'async':true,
-    'host':'wufoo.com',
-    'header':'show',
-    'ssl':true};
-    s.src = ('https:' == d.location.protocol ? 'https://' : 'http://') + 'www.wufoo.com/scripts/embed/form.js';
-    s.onload = s.onreadystatechange = function() {
-    var rs = this.readyState; if (rs) if (rs != 'complete') if (rs != 'loaded') return;
-    try { zfzmdxd1tuscc0 = new WufooForm();zfzmdxd1tuscc0.initialize(options);zfzmdxd1tuscc0.display(); } catch (e) {}};
-    var scr = d.getElementsByTagName(t)[0], par = scr.parentNode; par.insertBefore(s, scr);
-    })(document, 'script');</script>
-
-</div>
-
-
 
         </div>
         <!-- /.row -->
 
-        <hr>
+	<hr>
+	    <div id="disqus_thread"></div>
+	    <script>
 
+		    /**
+		     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+		      *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+		      	var disqus_config = function () {
+		          this.page.url = "thingforward.io";  // Replace PAGE_URL with your page's canonical URL variable
+			  this.page.identifier = "1234"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+			};
+			      (function() { // DON'T EDIT BELOW THIS LINE
+			          var d = document, s = d.createElement('script');
+				      s.src = '//thingforwardio.disqus.com/embed.js';
+				          s.setAttribute('data-timestamp', +new Date());
+					      (d.head || d.body).appendChild(s);
+					      })();
+		</script>
+		<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	<script id="dsq-count-scr" src="//thingforwardio.disqus.com/count.js" async></script>
+
+        <!-- Footer -->
                 <footer>
             <div class="row">
                 <div class="col-lg-12">
