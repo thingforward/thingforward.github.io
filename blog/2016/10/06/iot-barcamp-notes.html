@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>ThingForward  - ThingForward.io: Blog Kick-off</title>
+    <title>ThingForward  - IoT Barcamp Notes</title>
     <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="/blog/feed.xml" />
 
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300" rel="stylesheet">
@@ -79,31 +79,92 @@
             <div class="col-md-8">
 
                 <h1 class="page-header" class="posttitle">
-			              ThingForward.io: Blog Kick-off
+			              IoT Barcamp Notes
                 </h1>
                 <p class="lead">
                       by <a href="https://twitter.com/aschmidt75">Andreas</a>
                 </p>
-                <p><span class="glyphicon glyphicon-time"></span> Posted on Sep 26</p>
+                <p><span class="glyphicon glyphicon-time"></span> Posted on Oct  6</p>
 
-		                
-<p>Every blog has to start with a first post, so this one kicks off our blog journey into the software development of IoT – bringing together software development patterns from the Internet world and the world of Things!</p>
+		                <p>On Tuesday, 4th October, Oliver and I participated in our first German bar camp
+in Düsseldorf on the hype topic Internet of Things (IoT): <a href="www.iotbarcamp.de">www.iotbarcamp.de</a>.
+I would like to share my personal notes on the talks I heard and my general
+impressions of the camp.</p>
 
-<p>We really started this journey back in 2014 when we started designing and developing software for small, embedded devices. It was like a trip back in time. The majority of embedded IoT devices we came across were really “constrained”: small, 32-bit MCUs with only a few hundred KBs or at most 1-2 MBs of Flash, and sometimes even less SRAM to work with.</p>
+<p><img src="/img/iotbarcamp_IMG_0249.jpeg" alt="w100" /></p>
 
-<p>Given the equipment and configuration of chip modules, using C or C++ was and still is the primary way to program these devices. Of course there are a number of projects aiming to bring scripted languages such as JS and Python in the pipeline, but coding for professional products at the moment is still most likely done in plain C or C++. However, when it comes to optimization (whether for speed or battery consumption), the results can be quite sub-standard. It reminds me of the phrase “security by obscurity”, where you hide things with the aim of making your solution more secure - because nobody understands how to access it. As you might imagine, this is not very fruitful. When I look at highly optimized C code, I can see a lot of similarities.</p>
+<p>The venue encompassed the entire floor in a modern office building located
+in Düsseldorf Golzheim, in the heart of <a href="https://www.google.de/maps/place/Bennigsen-Platz,+40474+D%C3%BCsseldorf/@51.2465369,6.7680377,17z/data=!3m1!4b1!4m5!3m4!1s0x47b8c9efeef2d93d:0x552bc10c24260333!8m2!3d51.2465369!4d6.7702264]">Düsseldorf's fashion district</a>.
+It was a large open space with enough room to move around, a number of tables
+and chairs for taking breaks or to talk and work together with colleagues.
+So far so good.</p>
 
-<p>Unfortunately, this kind of optimization makes a number of things worse, i.e., when writing unit tests for your code, or even when trying to integrate new team members to the stack. Coming from the software development for the web world, we were used to having fully automated build and integration testing systems, with code using third party libraries from the OSS sphere, each one with its documentation and unit tests and so forth.
-Now, developing for the embedded world, we find ourselves once again thrown back to an ancient IT era, where many things still need to be done manually.</p>
+<p>The day progressed according to the time schedule starting with an introduction
+by the organisers and the opportunity for everyone in the audience to introduce
+himself/herself, together with three hashtag-like topics of one's own interests.
+With 130 people I was quite worried about how long that would take, but everyone
+managed to keep it short.</p>
 
-<p>Our primary concern is about communication within the Internet of Things. In this (probably exponentially) growing network, devices need to be able to communicate with each other. This not only includes the capabilities to “speak” the same radio protocol (WiFi, ZigBee, LoRa, etc), but also touches on other aspects of the software application layer: Protocols and Data Formats, covering layers 5 to 7 of the OSI stack.</p>
+<p>The introduction round revealed a diverse set of interests around IoT: from business topics
+(business models, ventures) through to UX design, platform building, hardware,
+radio, smart cities, autonomous vehicles, security, prototyping, LORA.</p>
 
-<p>Our aim is to improve software development for the latter aspects. We feel that IoT solutions need to be open and compatible when it comes to data communication. We want to give IoT developers and IoT architects valuable tools that help them simplify their embedded projects and thus speed up their development lifecycles.</p>
+<p>Session Planning was quite straight-forward: 23 session submissions, with 20
+available slots. After a short debate, two sessions joined, and two more were
+placed during the lunch break.</p>
 
-<p>In this blog we’re going to explore technical issues around embedded software development, testing devices, creating service layers and using embedded protocols and data formats. We hope we’re able to deliver valuable assets for IoT and embedded developers. Let us know what you think!</p>
+<p><img src="/img/iotbarcamp_IMG_0252.jpeg" alt="w100" /></p>
 
-<p>Best,
-Andreas and Oliver</p>
+<p>Sascha Pallenberg’s keynote was intended to be live streamed (because of Sascha
+being in Taipeh), but due to technical problems it was recorded and played back.
+Sascha showed what "Smart City" really means being in Taipeh: autonoumous underground
+trains, NFC payment being the norm and so on. Really interesting, especially when
+comparing the situation to - lets say - countries like Germany.
+Watch the recording <a href="http://www.iotbarcamp.de/live/">on the barcamp live page</a>, German-only.</p>
+
+<p>I had to hurry to finish my last slides for a session I was to give at 11:00,
+about "Data formats for the IoT: Developing for embedded and web".
+We researched different data formats and their efficiency with regards to size a
+and compared to binary formats. For example, parsing JSON or even XML on an
+embedded device can be really hard, whereas parsing the same structure in binary
+form can be quite easy to code AND reduces data sizes when transmitting or storing.</p>
+
+<p>I wondered if this topic would fire up discussions in the audience: If it makes
+sense, if it makes a difference, whether it is needed because it has already been
+solved? I was not disappointed. We had a lively discussion covering a lot of
+aspects, so obviously we raised a relevant topic.</p>
+
+<p>You can take a look at <a href="https://speakerdeck.com/aschmidt75/iot-barcamp-data-formats-for-the-internet-of-things">my slides here</a>.
+This and other material will be the basis of our upcoming projects, so stay tuned :)</p>
+
+<p>The next session I visited was "IoT Service Kit" presented by <a href="https://twitter.com/drbits">Michael Hufelschulte</a>
+from Cassini. The core idea is to have an offline "playground" to prototype mobile
+and IoT solutions. The IoT is not only about software behind a web interface, and
+not only about hardware gadgets either: It’s also about technology becoming ubiquitous,
+so we should model and design the usage of it as well. The IoT service kit does that,
+and Michael invited the audience around a table to design and run through a sample case.</p>
+
+<p>I was also happy to find a session about radio technology: Crowd sourced LPWAN,
+LoraWAN and The Things Network,by <a href="https://twitter.com/kgbvax">@kgbvax</a>. I already
+knew a bit about LORA and read about the underlying radio technology in the slide
+presentation <a href="http://static1.squarespace.com/static/54cecce7e4b054df1848b5f9/t/57489e6e07eaa0105215dc6c/1464376943218/Reversing-Lora-Knight.pdf">"Reversing LORA"</a>)
+but I still had some questions, such as what nodes to attach to a gateway, how to
+code against it, costs, regulations etc. All answered, nice session!</p>
+
+<p>The last session i visited was "Selecting the right radio technology for IoT".
+Lyn Matten from mm1 Technology introduced the various pitfalls that may arise
+when selecting a radio technology for your own project, be it security,
+energy consumption, regulations, internationalisation etc.
+Bottom line: Know your requirements (as always :-) Slides: to be determined.</p>
+
+<p><img src="/img/iotbarcamp_IMG_0256.jpeg" alt="w100" /></p>
+
+<p>I'm still waiting for the session notes and the full list of links to the slides.
+I hope they're going to be published by the barcamp team, so i can supply them to you.</p>
+
+<p>Looking forward to the next IoT Barcamp!</p>
+
+<p>Andreas</p>
 
 
                 <!-- go back -->
@@ -176,8 +237,8 @@ Andreas and Oliver</p>
 		     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
 		      *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
 		      	var disqus_config = function () {
-		          this.page.url = "http://www.thingforward.io/blog/2016-09-26-thingforward-io-blog-kick-off.html";  // Replace PAGE_URL with your page's canonical URL variable
-			        this.page.identifier = "blog/2016-09-26-thingforward-io-blog-kick-off.html"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+		          this.page.url = "http://www.thingforward.io/blog/2016-10-06-iot-barcamp-notes.html";  // Replace PAGE_URL with your page's canonical URL variable
+			        this.page.identifier = "blog/2016-10-06-iot-barcamp-notes.html"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
 			};
 			      (function() { // DON'T EDIT BELOW THIS LINE
 			          var d = document, s = d.createElement('script');
