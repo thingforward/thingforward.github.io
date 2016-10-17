@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>ThingForward  - IoT Barcamp Notes</title>
+    <title>ThingForward  - Does REST for small devices make sense?</title>
     <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="/blog/feed.xml" />
 
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300" rel="stylesheet">
@@ -79,92 +79,47 @@
             <div class="col-md-8">
 
                 <h1 class="page-header" class="posttitle">
-			              IoT Barcamp Notes
+			              Does REST for small devices make sense?
                 </h1>
                 <p class="lead">
                       by <a href="https://twitter.com/aschmidt75">Andreas</a>
                 </p>
-                <p><span class="glyphicon glyphicon-time"></span> Posted on Oct  6</p>
+                <p><span class="glyphicon glyphicon-time"></span> Posted on Oct 11</p>
 
-		                <p>On Tuesday, 4th October, Oliver and I participated in our first German bar camp
-in Düsseldorf on the hype topic Internet of Things (IoT): <a href="http://www.iotbarcamp.de/">www.iotbarcamp.de</a>.
-I would like to share my personal notes on the talks I heard and my general
-impressions of the camp.</p>
+		                <p>When reading about maker projects, we often find case examples and remoting implementations using subsets of HTTP, i.e. requesting a status page from a RaspberryPi-based Sensor board or sending commands to small actor devices using HTTP-POST. There are quite a few blog posts and articles are about implementing a REST API on those small devices. Given that REST is well-known from the field of web development, we asked ouselves whether it would make sense to transfer REST capabilities to the field of embedded and IoT development.</p>
 
-<p><img src="/img/iotbarcamp_IMG_0249.jpeg" alt="w100" /></p>
+<h2 id="from-web-services-to-devices-services">From web services to devices services</h2>
 
-<p>The venue encompassed the entire floor in a modern office building located
-in Düsseldorf Golzheim, in the heart of <a href="https://www.google.de/maps/place/Bennigsen-Platz,+40474+D%C3%BCsseldorf/@51.2465369,6.7680377,17z/data=!3m1!4b1!4m5!3m4!1s0x47b8c9efeef2d93d:0x552bc10c24260333!8m2!3d51.2465369!4d6.7702264]">Düsseldorf's fashion district</a>.
-It was a large open space with enough room to move around, a number of tables
-and chairs for taking breaks or to talk and work together with colleagues.
-So far so good.</p>
+<p>When internet services offer access methods besides a browser-/HTML-based user interface, they often implement SOAP or apply REST as an architecture pattern. Both methods are about exchanging data and structured information between clients and (web) services in a network. The first, SOAP, is a standardized protocol whereas the latter, REST, is an architectural style and not a protocol.</p>
 
-<p>The day progressed according to the time schedule starting with an introduction
-by the organisers and the opportunity for everyone in the audience to introduce
-himself/herself, together with three hashtag-like topics of one's own interests.
-With 130 people I was quite worried about how long that would take, but everyone
-managed to keep it short.</p>
+<p>The REST-style approach has become very popular over the years, so developers often choose a combination of HTTP as a transport, JSON or XML as a format for exchanging data and a mix of characteristics and conventions that make up the RESTful architecture style. What are these characteristics, and can they also be applied to small IoT devices?</p>
 
-<p>The introduction round revealed a diverse set of interests around IoT: from business topics
-(business models, ventures) through to UX design, platform building, hardware,
-radio, smart cities, autonomous vehicles, security, prototyping, LORA.</p>
+<p>But first: What do we mean by "small IoT devices"? A great many blog posts on this topic include SBCs such as the Raspberry Pi and comparable devices. These include multicore-processors capable of running operating systems such as Android, Linux or Windows IoT Core. They also run more or less the same software as found on servers, only with less computing power.
+For this post we'd like to concentrate on really small, constrained devices: running on a single core processor, with only Kilobytes or sometimes Megabytes of Flash memory, and definitely not a full operating system such as Linux.</p>
 
-<p>Session Planning was quite straight-forward: 23 session submissions, with 20
-available slots. After a short debate, two sessions joined, and two more were
-placed during the lunch break.</p>
+<h2 id="rest-and-restful">REST and RESTful</h2>
 
-<p><img src="/img/iotbarcamp_IMG_0252.jpeg" alt="w100" /></p>
+<p>The <a href="https://en.wikipedia.org/wiki/Representational_state_transfer">Wikipedias article on REST</a> states a number of architectural constraints. If a service fulfils these, it can be considered "RESTful". Maybe our small devices can also be RESTful.</p>
 
-<p>Sascha Pallenberg’s keynote was intended to be live streamed (because of Sascha
-being in Taipeh), but due to technical problems it was recorded and played back.
-Sascha showed what "Smart City" really means being in Taipeh: autonoumous underground
-trains, NFC payment being the norm and so on. Really interesting, especially when
-comparing the situation to - lets say - countries like Germany.
-Watch the recording <a href="http://www.iotbarcamp.de/live/">on the barcamp live page</a>, German-only.</p>
+<p>The first constraint regards the <strong>separation between client and server</strong>, and thus the separation of a user interface, i.e. a Web UI. This can also be applied to IoT devices, i.e., when the data from a sensor is sent to a cloud service or when an App on a mobile device requests the triggering of an action on the constrained device. So maybe it's not about a "client" and "server" anymore, but still two (or more) parties exchanging data, and evolving independently of each other (as long as they adhere to the API contract).</p>
 
-<p>I had to hurry to finish my last slides for a session I was to give at 11:00,
-about "Data formats for the IoT: Developing for embedded and web".
-We researched different data formats and their efficiency with regards to size a
-and compared to binary formats. For example, parsing JSON or even XML on an
-embedded device can be really hard, whereas parsing the same structure in binary
-form can be quite easy to code AND reduces data sizes when transmitting or storing.</p>
+<p>Next up are <strong>stateless</strong> and <strong>cacheable</strong> as important constraints for being RESTful. These requirements date back to a time when server-side application used to store a lot of client context data in server sessions, normally for a large number of clients. For constrained devices, this look easy. They simply do not have enough memory and processing capabilities to implement a server-side data storage, instead directly applying changes to physical properties: turning on a light, adjusting temperatures immediately upon request. It is not a problem to design statelessness into device behaviour. Clients can request a state-change on a device, and the device can immediately fulfill this request.</p>
 
-<p>I wondered if this topic would fire up discussions in the audience: If it makes
-sense, if it makes a difference, whether it is needed because it has already been
-solved? I was not disappointed. We had a lively discussion covering a lot of
-aspects, so obviously we raised a relevant topic.</p>
+<p>The requirement <strong>layered system</strong> can be fulfilled as well. Quite a number of IoT devices are not directly accessible (i.e., because of non-IP network stacks, different radio technologies, etc.), but are accessible via IoT gateways. So it's the gateway that represents a layer in the system, adding functionality to the overall solution.</p>
 
-<p>You can take a look at <a href="https://speakerdeck.com/aschmidt75/iot-barcamp-data-formats-for-the-internet-of-things">my slides here</a>.
-This and other material will be the basis of our upcoming projects, so stay tuned :)</p>
+<p>Next i'd like to look at the requirements for a <strong>uniform interface</strong>.
+The <strong>identification of resources</strong> introduced a fundamental difference to accessing data within a web application. Developers are used to the convention that, for example, in an event store service, all events can be accessed by the URI <code>/events</code>, and a single event with id 3512 under <code>/events/3512</code>. This applies to devices as well when they are used to control different resources such as sensors and actors. Three LEDs can be accessed by, let's say <code>/led/1</code>, <code>/led/2</code> and <code>/led/3</code>, as a very simple example. Resources are <strong>controlled by representations</strong>, usually in some form of data format. For constrained devices, the choice of a data format is essential, as it is likely they can only supply a single data format, probably a binary one. This is in contrast to web services, which can easily produce and parse multiple representations, i.e., XML or JSON or HTML. So being on a very constrained environment, we'd have to make a choice here.</p>
 
-<p>The next session I visited was "IoT Service Kit" presented by <a href="https://twitter.com/drbits">Michael Hufelschulte</a>
-from Cassini. The core idea is to have an offline "playground" to prototype mobile
-and IoT solutions. The IoT is not only about software behind a web interface, and
-not only about hardware gadgets either: It’s also about technology becoming ubiquitous,
-so we should model and design the usage of it as well. The IoT service kit does that,
-and Michael invited the audience around a table to design and run through a sample case.</p>
+<p>A very interesting constraint impacts the hypermedia model and brings application state changes into the representation of content. This would apply to a service answer’s requests for  resources with content where further, possible actions are supplied in URLs (i.e. see <a href="https://en.wikipedia.org/wiki/HATEOAS">HATEOAS</a>).
+It would allow a client to navigate through an application without knowledge about the content structure, because it is fully supplied within the hypermedia model.</p>
 
-<p>I was also happy to find a session about radio technology: Crowd sourced LPWAN,
-LoraWAN and The Things Network,by <a href="https://twitter.com/kgbvax">@kgbvax</a>. I already
-knew a bit about LORA and read about the underlying radio technology in the slide
-presentation <a href="http://static1.squarespace.com/static/54cecce7e4b054df1848b5f9/t/57489e6e07eaa0105215dc6c/1464376943218/Reversing-Lora-Knight.pdf">"Reversing LORA"</a>)
-but I still had some questions, such as what nodes to attach to a gateway, how to
-code against it, costs, regulations etc. All answered, nice session!</p>
+<p>Constrained devices would also be capable of fulfilling this requirement. CoAP as an IoT protocol allows for the discovery of resources on a device, specified by the Constrained RESTful Environments (CoRE) Link Format, as specified by <a href="https://tools.ietf.org/html/rfc6690">RFC6690</a>.</p>
 
-<p>The last session i visited was "Selecting the right radio technology for IoT".
-Lyn Matten from mm1 Technology introduced the various pitfalls that may arise
-when selecting a radio technology for your own project, be it security,
-energy consumption, regulations, internationalisation etc.
-Bottom line: Know your requirements (as always :-) Slides: to be determined.</p>
+<h2 id="rest-for-constrained-devices">REST for constrained devices</h2>
 
-<p><img src="/img/iotbarcamp_IMG_0256.jpeg" alt="w100" /></p>
+<p>Looking at the requirements of REST as an architectural style, we find that constrained devices are able to fulfil those, albeit on a much simpler level than web services do.</p>
 
-<p>I'm still waiting for the session notes and the full list of links to the slides.
-I hope they're going to be published by the barcamp team, so i can supply them to you.</p>
-
-<p>Looking forward to the next IoT Barcamp!</p>
-
-<p>Andreas</p>
+<p>At one of the next blog posts, we're going to look at CoAP, the Constrained Application Protocol and see how to implement a REST API on a small device!</p>
 
 
                 <!-- go back -->
@@ -239,8 +194,8 @@ I hope they're going to be published by the barcamp team, so i can supply them t
 		     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
 		      *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
 		      	var disqus_config = function () {
-		          this.page.url = "http://www.thingforward.io/blog/2016-10-06-iot-barcamp-notes.html";  // Replace PAGE_URL with your page's canonical URL variable
-			        this.page.identifier = "blog/2016-10-06-iot-barcamp-notes.html"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+		          this.page.url = "http://www.thingforward.io/blog/2016-10-11-does-rest-for-small-devices-make-sense.html";  // Replace PAGE_URL with your page's canonical URL variable
+			        this.page.identifier = "blog/2016-10-11-does-rest-for-small-devices-make-sense.html"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
 			};
 			      (function() { // DON'T EDIT BELOW THIS LINE
 			          var d = document, s = d.createElement('script');
