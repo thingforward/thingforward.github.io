@@ -117,38 +117,38 @@
 
 		                <p>When reading about maker projects, we often find case examples and remoting implementations using subsets of HTTP, i.e. requesting a status page from a RaspberryPi-based Sensor board or sending commands to small actor devices using HTTP-POST. There are quite a few blog posts and articles are about implementing a REST API on those small devices. Given that REST is well-known from the field of web development, we asked ouselves whether it would make sense to transfer REST capabilities to the field of embedded and IoT development.</p>
 
-<h2 id="from-web-services-to-devices-services">From web services to devices services</h2>
+<h2>From web services to devices services</h2>
 
 <p>When internet services offer access methods besides a browser-/HTML-based user interface, they often implement SOAP or apply REST as an architecture pattern. Both methods are about exchanging data and structured information between clients and (web) services in a network. The first, SOAP, is a standardized protocol whereas the latter, REST, is an architectural style and not a protocol.</p>
 
 <p>The REST-style approach has become very popular over the years, so developers often choose a combination of HTTP as a transport, JSON or XML as a format for exchanging data and a mix of characteristics and conventions that make up the RESTful architecture style. What are these characteristics, and can they also be applied to small IoT devices?</p>
 
-<p>But first: What do we mean by "small IoT devices"? A great many blog posts on this topic include SBCs such as the Raspberry Pi and comparable devices. These include multicore-processors capable of running operating systems such as Android, Linux or Windows IoT Core. They also run more or less the same software as found on servers, only with less computing power.
-For this post we'd like to concentrate on really small, constrained devices: running on a single core processor, with only Kilobytes or sometimes Megabytes of Flash memory, and definitely not a full operating system such as Linux.</p>
+<p>But first: What do we mean by &ldquo;small IoT devices&rdquo;? A great many blog posts on this topic include SBCs such as the Raspberry Pi and comparable devices. These include multicore-processors capable of running operating systems such as Android, Linux or Windows IoT Core. They also run more or less the same software as found on servers, only with less computing power.
+For this post we&rsquo;d like to concentrate on really small, constrained devices: running on a single core processor, with only Kilobytes or sometimes Megabytes of Flash memory, and definitely not a full operating system such as Linux.</p>
 
-<h2 id="rest-and-restful">REST and RESTful</h2>
+<h2>REST and RESTful</h2>
 
-<p>The <a href="https://en.wikipedia.org/wiki/Representational_state_transfer">Wikipedias article on REST</a> states a number of architectural constraints. If a service fulfils these, it can be considered "RESTful". Maybe our small devices can also be RESTful.</p>
+<p>The <a href="https://en.wikipedia.org/wiki/Representational_state_transfer">Wikipedias article on REST</a> states a number of architectural constraints. If a service fulfils these, it can be considered &ldquo;RESTful&rdquo;. Maybe our small devices can also be RESTful.</p>
 
-<p>The first constraint regards the <strong>separation between client and server</strong>, and thus the separation of a user interface, i.e. a Web UI. This can also be applied to IoT devices, i.e., when the data from a sensor is sent to a cloud service or when an App on a mobile device requests the triggering of an action on the constrained device. So maybe it's not about a "client" and "server" anymore, but still two (or more) parties exchanging data, and evolving independently of each other (as long as they adhere to the API contract).</p>
+<p>The first constraint regards the <strong>separation between client and server</strong>, and thus the separation of a user interface, i.e. a Web UI. This can also be applied to IoT devices, i.e., when the data from a sensor is sent to a cloud service or when an App on a mobile device requests the triggering of an action on the constrained device. So maybe it&rsquo;s not about a &ldquo;client&rdquo; and &ldquo;server&rdquo; anymore, but still two (or more) parties exchanging data, and evolving independently of each other (as long as they adhere to the API contract).</p>
 
 <p>Next up are <strong>stateless</strong> and <strong>cacheable</strong> as important constraints for being RESTful. These requirements date back to a time when server-side application used to store a lot of client context data in server sessions, normally for a large number of clients. For constrained devices, this look easy. They simply do not have enough memory and processing capabilities to implement a server-side data storage, instead directly applying changes to physical properties: turning on a light, adjusting temperatures immediately upon request. It is not a problem to design statelessness into device behaviour. Clients can request a state-change on a device, and the device can immediately fulfill this request.</p>
 
-<p>The requirement <strong>layered system</strong> can be fulfilled as well. Quite a number of IoT devices are not directly accessible (i.e., because of non-IP network stacks, different radio technologies, etc.), but are accessible via IoT gateways. So it's the gateway that represents a layer in the system, adding functionality to the overall solution.</p>
+<p>The requirement <strong>layered system</strong> can be fulfilled as well. Quite a number of IoT devices are not directly accessible (i.e., because of non-IP network stacks, different radio technologies, etc.), but are accessible via IoT gateways. So it&rsquo;s the gateway that represents a layer in the system, adding functionality to the overall solution.</p>
 
-<p>Next i'd like to look at the requirements for a <strong>uniform interface</strong>.
-The <strong>identification of resources</strong> introduced a fundamental difference to accessing data within a web application. Developers are used to the convention that, for example, in an event store service, all events can be accessed by the URI <code>/events</code>, and a single event with id 3512 under <code>/events/3512</code>. This applies to devices as well when they are used to control different resources such as sensors and actors. Three LEDs can be accessed by, let's say <code>/led/1</code>, <code>/led/2</code> and <code>/led/3</code>, as a very simple example. Resources are <strong>controlled by representations</strong>, usually in some form of data format. For constrained devices, the choice of a data format is essential, as it is likely they can only supply a single data format, probably a binary one. This is in contrast to web services, which can easily produce and parse multiple representations, i.e., XML or JSON or HTML. So being on a very constrained environment, we'd have to make a choice here.</p>
+<p>Next i&rsquo;d like to look at the requirements for a <strong>uniform interface</strong>.
+The <strong>identification of resources</strong> introduced a fundamental difference to accessing data within a web application. Developers are used to the convention that, for example, in an event store service, all events can be accessed by the URI <code>/events</code>, and a single event with id 3512 under <code>/events/3512</code>. This applies to devices as well when they are used to control different resources such as sensors and actors. Three LEDs can be accessed by, let&rsquo;s say <code>/led/1</code>, <code>/led/2</code> and <code>/led/3</code>, as a very simple example. Resources are <strong>controlled by representations</strong>, usually in some form of data format. For constrained devices, the choice of a data format is essential, as it is likely they can only supply a single data format, probably a binary one. This is in contrast to web services, which can easily produce and parse multiple representations, i.e., XML or JSON or HTML. So being on a very constrained environment, we&rsquo;d have to make a choice here.</p>
 
 <p>A very interesting constraint impacts the hypermedia model and brings application state changes into the representation of content. This would apply to a service answer’s requests for  resources with content where further, possible actions are supplied in URLs (i.e. see <a href="https://en.wikipedia.org/wiki/HATEOAS">HATEOAS</a>).
 It would allow a client to navigate through an application without knowledge about the content structure, because it is fully supplied within the hypermedia model.</p>
 
 <p>Constrained devices would also be capable of fulfilling this requirement. CoAP as an IoT protocol allows for the discovery of resources on a device, specified by the Constrained RESTful Environments (CoRE) Link Format, as specified by <a href="https://tools.ietf.org/html/rfc6690">RFC6690</a>.</p>
 
-<h2 id="rest-for-constrained-devices">REST for constrained devices</h2>
+<h2>REST for constrained devices</h2>
 
 <p>Looking at the requirements of REST as an architectural style, we find that constrained devices are able to fulfil those, albeit on a much simpler level than web services do.</p>
 
-<p>At one of the next blog posts, we're going to look at CoAP, the Constrained Application Protocol and see how to implement a REST API on a small device!</p>
+<p>At one of the next blog posts, we&rsquo;re going to look at CoAP, the Constrained Application Protocol and see how to implement a REST API on a small device!</p>
 
 
                 <!-- go back -->
@@ -184,7 +184,7 @@ It would allow a client to navigate through an application without knowledge abo
                         <div class="col-lg-6">
                             <ul class="list-unstyled">
           <li><a href="/blog/tags/general.html">General (3)</a></li>
-          <li><a href="/blog/tags/tech.html">Tech (1)</a></li>
+          <li><a href="/blog/tags/tech.html">Tech (2)</a></li>
                             </ul>
                         </div>
                         <!-- /.col-lg-6 -->
@@ -198,6 +198,7 @@ It would allow a client to navigate through an application without knowledge abo
                     <div class="row">
                         <div class="col-lg-6">
 			    <ul class="list-unstyled">
+          <li><a href="/blog/2016/11.html">2016-11 (1)</a></li>
           <li><a href="/blog/2016/10.html">2016-10 (2)</a></li>
           <li><a href="/blog/2016/09.html">2016-9 (2)</a></li>
                             </ul>

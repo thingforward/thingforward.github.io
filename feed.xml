@@ -5,10 +5,756 @@
   <id>http://blog.url.com/blog</id>
   <link href="http://blog.url.com/blog"/>
   <link href="http://blog.url.com/feed.xml" rel="self"/>
-  <updated>2016-10-11T15:28:00+02:00</updated>
+  <updated>2016-11-22T11:25:00+01:00</updated>
   <author>
     <name>Blog Author</name>
   </author>
+  <entry>
+    <title>Getting started with PlatformIO and ESP8266 - Libraries</title>
+    <link rel="alternate" href="http://blog.url.com/blog/2016/11/22/getting-started-with-platformio-and-esp8266.html"/>
+    <id>http://blog.url.com/blog/2016/11/22/getting-started-with-platformio-and-esp8266.html</id>
+    <published>2016-11-22T11:25:00+01:00</published>
+    <updated>2016-11-24T09:58:33+01:00</updated>
+    <author>
+      <name>Article Author</name>
+    </author>
+    <content type="html">&lt;p&gt;This tech post is about two small ESP8266-based boards, the &lt;a href="http://wemos.cc"&gt;Wemos D1 Mini&lt;/a&gt;
+and the &lt;a href="http://www.nodemcu.com/index_en.html"&gt;NodeMCU&lt;/a&gt; and how to create a development
+environment. Both boards can be programmed and flashed with the well known
+Arduino IDE, but I rather enjoy having my own code editor and tool chain at hand on the command line.&lt;/p&gt;
+
+&lt;p&gt;I prefer using &lt;a href="http://www.platformio.org"&gt;PlatformIO&lt;/a&gt; for a number of reasons:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;It is built upon Python (2.7), and therefore suitable for a number of platforms (Win, OSX, Linux)&lt;/li&gt;
+&lt;li&gt;It completely manages the board/platform-specific toolchain underneath: cross-compilers, linkers, flashing etc.&lt;/li&gt;
+&lt;li&gt;It comes with a library model that allows you to simply install and manage custom libraries&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Here we go!&lt;/p&gt;
+
+&lt;h2&gt;Install the PlatformIO Client&lt;/h2&gt;
+
+&lt;p&gt;PlatformIO offers a full IDE based on Atom, but we&amp;rsquo;re going to start with the command line tools only.
+Installing the tool is quite easy, and can be done via python &lt;code&gt;pip&lt;/code&gt;, homebrew, or by python script. For full
+documentation, make sure to check &lt;a href="http://docs.platformio.org/en/stable/installation.html#installation-methods"&gt;their great doc site&lt;/a&gt;. But for most cases, pip or brew will do:&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;pip search platformio
+platformio &lt;span class="o"&gt;(&lt;/span&gt;3.1.0&lt;span class="o"&gt;)&lt;/span&gt;  - An open &lt;span class="nb"&gt;source &lt;/span&gt;ecosystem &lt;span class="k"&gt;for &lt;/span&gt;IoT development. Cross-platform build system and library manager. Continuous and IDE integration. Arduino, ESP8266 and ARM mbed compatible
+  INSTALLED: 3.1.0 &lt;span class="o"&gt;(&lt;/span&gt;latest&lt;span class="o"&gt;)&lt;/span&gt;
+
+&lt;span class="gp"&gt;$ &lt;/span&gt;brew info platformio
+platformio: stable 3.1.0 &lt;span class="o"&gt;(&lt;/span&gt;bottled&lt;span class="o"&gt;)&lt;/span&gt;
+Ecosystem &lt;span class="k"&gt;for &lt;/span&gt;IoT development &lt;span class="o"&gt;(&lt;/span&gt;Arduino and ARM mbed compatible&lt;span class="o"&gt;)&lt;/span&gt;
+http://platformio.org
+Not installed
+From: https://github.com/Homebrew/homebrew-core/blob/master/Formula/platformio.rb
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;What you get is an executable, &lt;code&gt;platformio&lt;/code&gt;, abbreviated as &lt;code&gt;pio&lt;/code&gt;, so:&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;pio --help
+Usage: pio &lt;span class="o"&gt;[&lt;/span&gt;OPTIONS] COMMAND &lt;span class="o"&gt;[&lt;/span&gt;ARGS]...
+
+Options:
+  --version          Show the version and exit.
+  -f, --force        Force to accept any confirmation prompts.
+  -c, --caller TEXT  Caller ID &lt;span class="o"&gt;(&lt;/span&gt;service&lt;span class="o"&gt;)&lt;/span&gt;.
+  -h, --help         Show this message and exit.
+
+Commands:
+  boards    Pre-configured Embedded Boards
+  ci        Continuous Integration
+  device    Monitor device or list existing
+  init      Initialize PlatformIO project or update existing
+  lib       Library Manager
+  platform  Platform Manager
+  run       Process project environments
+  settings  Manage PlatformIO settings
+  &lt;span class="nb"&gt;test      &lt;/span&gt;Unit Testing
+  update    Update installed Platforms, Packages and Libraries
+  upgrade   Upgrade PlatformIO to the latest version
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now, let&amp;rsquo;s create a project for one of our boards.&lt;/p&gt;
+
+&lt;h2&gt;Creating a project&lt;/h2&gt;
+
+&lt;p&gt;As a first step, we need to select the board or platform type we&amp;rsquo;d like to
+code for. &lt;code&gt;pio&lt;/code&gt; has a &lt;code&gt;boards&lt;/code&gt; command that can show what platforms are
+currently installed (&lt;code&gt;--installed&lt;/code&gt;)and offers a keyword search for all available
+boards. Let&amp;rsquo;s do so for the ESP-based boards mentioned above:&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;pio boards nodemcu
+
+Platform: espressif8266
+--------------------------------------------------------------------------------------------------------------------------ID                    MCU            Frequency  Flash   RAM    Name
+--------------------------------------------------------------------------------------------------------------------------nodemcu               ESP8266        80Mhz     4096kB  80kB   NodeMCU 0.9 &lt;span class="o"&gt;(&lt;/span&gt;ESP-12 Module&lt;span class="o"&gt;)&lt;/span&gt;
+nodemcuv2             ESP8266        80Mhz     4096kB  80kB   NodeMCU 1.0 &lt;span class="o"&gt;(&lt;/span&gt;ESP-12E Module&lt;span class="o"&gt;)&lt;/span&gt;
+
+&lt;span class="gp"&gt;$ &lt;/span&gt;pio boards wemos
+
+Platform: espressif8266
+--------------------------------------------------------------------------------------------------------------------------ID                    MCU            Frequency  Flash   RAM    Name
+--------------------------------------------------------------------------------------------------------------------------d1                    ESP8266        80Mhz     4096kB  80kB   WeMos D1&lt;span class="o"&gt;(&lt;/span&gt;Retired&lt;span class="o"&gt;)&lt;/span&gt;
+d1_mini               ESP8266        80Mhz     4096kB  80kB   WeMos D1 R2 &amp;amp; mini
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Luckily, my boards are supported. For a complete list, just execute &lt;code&gt;pio boards&lt;/code&gt;, or browse
+the complete catalogue on the &lt;a href="http://platformio.org/boards"&gt;web site&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;To create a project, we&amp;rsquo;ll use the &lt;code&gt;init&lt;/code&gt; command. It takes a board id (I start with NodeMCU), a directory and
+an ide integration, all of which are optional. I choose CLion as the IDE integration, although a number of others are also viable alternatives.
+If a directory is not given, it will create the project in the current directory, which is what I do:&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;~$ &lt;/span&gt;mkdir esp-project-1
+&lt;span class="gp"&gt;~$ &lt;/span&gt;&lt;span class="nb"&gt;cd &lt;/span&gt;esp-project-1/
+&lt;span class="gp"&gt;~/esp-project-1$ &lt;/span&gt;pio init -b nodemcu --ide clion
+&lt;span class="o"&gt;(&lt;/span&gt;...&lt;span class="o"&gt;))&lt;/span&gt;
+
+The current working directory /home/ubuntu/esp-project-1 will be used &lt;span class="k"&gt;for &lt;/span&gt;project.
+You can specify another project directory via
+&lt;span class="sb"&gt;`&lt;/span&gt;platformio init -d %PATH_TO_THE_PROJECT_DIR%&lt;span class="sb"&gt;`&lt;/span&gt; command.
+
+The next files/directories have been created &lt;span class="k"&gt;in&lt;/span&gt; /home/ubuntu/esp-project-1
+platformio.ini - Project Configuration File
+src - Put your &lt;span class="nb"&gt;source &lt;/span&gt;files here
+lib - Put here project specific &lt;span class="o"&gt;(&lt;/span&gt;private&lt;span class="o"&gt;)&lt;/span&gt; libraries
+PlatformManager: Installing espressif8266
+Downloading...
+Unpacking  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="c"&gt;####################################]  100%&lt;/span&gt;
+espressif8266 @ 1.2.0 has been successfully installed!
+PackageManager: Installing toolchain-xtensa @ ~1.40802.0
+Downloading  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="c"&gt;####################################]  100%&lt;/span&gt;
+Unpacking  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="c"&gt;####################################]  100%&lt;/span&gt;
+toolchain-xtensa @ 1.40802.0 has been successfully installed!
+PackageManager: Installing tool-esptool @ ~1.409.0
+Downloading  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="c"&gt;####################################]  100%&lt;/span&gt;
+Unpacking  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="c"&gt;####################################]  100%&lt;/span&gt;
+tool-esptool @ 1.409.0 has been successfully installed!
+PackageManager: Installing tool-espotapy @ ~1.0.0
+Downloading  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="c"&gt;####################################]  100%&lt;/span&gt;
+Unpacking  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="c"&gt;####################################]  100%&lt;/span&gt;
+tool-espotapy @ 1.0.0 has been successfully installed!
+The platform &lt;span class="s1"&gt;'espressif8266'&lt;/span&gt; has been successfully installed!
+The rest of packages will be installed automatically depending on your build environment.
+
+Project has been successfully initialized!
+&lt;span class="o"&gt;(&lt;/span&gt;...&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That took a while, because PlatformIO managed the complete toolchain necessary
+to build for Tensilica Xtensa processors, and for flashing it to the boards. It now shows
+what packages have been installed:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;espressif8266&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;toolchain-xtensa&lt;/code&gt;: compilers, linker, library tools etc.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tool-esptool&lt;/code&gt;: flashing&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tool-espotapy&lt;/code&gt;: Over-the-air updates.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Where did they go? &lt;code&gt;~/.platformio&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;ls -al ~/.platformio/packages/
+total 28
+drwxrwxr-x 7 ubuntu ubuntu 4096 Nov 23 10:45 .
+drwxrwxr-x 6 ubuntu ubuntu 4096 Nov 23 10:45 ..
+drwx------ 7 ubuntu ubuntu 4096 Nov 23 10:45 framework-arduinoespressif8266
+drwx------ 8 ubuntu ubuntu 4096 Nov 23 10:45 toolchain-xtensa
+drwx------ 2 ubuntu ubuntu 4096 Nov 23 10:45 tool-espotapy
+drwx------ 2 ubuntu ubuntu 4096 Nov 23 10:45 tool-esptool
+drwx------ 4 ubuntu ubuntu 4096 Nov 23 10:45 tool-scons
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So that is quite neat and separated by user environments. Plus, of course, we now have a skeleton
+project in our current directory:&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;ls -al
+total 48
+drwxrwxr-x 6 ubuntu ubuntu 4096 Nov 23 10:45 .
+drwxr-xr-x 8 ubuntu ubuntu 4096 Nov 23 10:45 ..
+-rw-rw-r-- 1 ubuntu ubuntu 4903 Nov 23 10:45 CMakeListsPrivate.txt
+-rw-rw-r-- 1 ubuntu ubuntu 1294 Nov 23 10:45 CMakeLists.txt
+-rw-rw-r-- 1 ubuntu ubuntu   42 Nov 23 10:45 .gitignore
+drwxrwxr-x 2 ubuntu ubuntu 4096 Nov 23 10:45 .idea
+drwxrwxr-x 2 ubuntu ubuntu 4096 Nov 23 10:45 lib
+drwxrwxr-x 2 ubuntu ubuntu 4096 Nov 23 10:45 .pioenvs
+-rw-rw-r-- 1 ubuntu ubuntu  416 Nov 23 10:45 platformio.ini
+drwxrwxr-x 2 ubuntu ubuntu 4096 Nov 23 10:45 src
+-rw-rw-r-- 1 ubuntu ubuntu 1516 Nov 23 10:45 .travis.yml
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;Adding some code&lt;/h2&gt;
+
+&lt;p&gt;PlatformIO manages a &lt;code&gt;platformio.ini&lt;/code&gt; file where additional settings can be made as well as a few extras,e.g., a &lt;code&gt;.gitignore&lt;/code&gt;, TravisCI configuration and CMake files. &lt;code&gt;lib/&lt;/code&gt; and
+&lt;code&gt;src/&lt;/code&gt; are empty, so let&amp;rsquo;s add a simple sketch.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;src/main.cpp&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class="highlight cpp"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;
+&lt;span class="cp"&gt;#include &amp;lt;arduino.h&amp;gt;
+&lt;/span&gt;
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;setup&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;Serial&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;begin&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;9600&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;loop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;Serial&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"Hi from NodeMCU"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;delay&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;PlatformIO&amp;rsquo;s &lt;code&gt;run&lt;/code&gt; command takes care of the build:&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;platformio run
+&lt;span class="o"&gt;[&lt;/span&gt;Wed Nov 23 11:58:09 2016] Processing nodemcu &lt;span class="o"&gt;(&lt;/span&gt;platform: espressif8266, board: nodemcu, framework: arduino&lt;span class="o"&gt;)&lt;/span&gt;
+-------------------------------------------------------------------------------------------------------------------------Verbose mode can be enabled via &lt;span class="sb"&gt;`&lt;/span&gt;-v, --verbose&lt;span class="sb"&gt;`&lt;/span&gt; option
+Collected 23 compatible libraries
+Looking &lt;span class="k"&gt;for &lt;/span&gt;dependencies...
+Project does not have dependencies
+Compiling .pioenvs/nodemcu/src/main.o
+Linking .pioenvs/nodemcu/firmware.elf
+Building .pioenvs/nodemcu/firmware.bin
+Calculating size .pioenvs/nodemcu/firmware.elf
+text       data     bss     dec     hex filename
+221900     2208   29464  253572   3de84 .pioenvs/nodemcu/firmware.elf
+&lt;span class="o"&gt;===========================================================================&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;SUCCESS] Took 2.20 seconds
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That was successful, and it provided us with a compiled firmware binary in &lt;code&gt;.pioenvs/nodemcu&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;--target&lt;/code&gt; (or &lt;code&gt;-t&lt;/code&gt;) parameter is important for the run command, as it controls behaviour within the make process.
+To clean, use&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;pio run -t clean
+Removed .pioenvs/nodemcu/firmware.bin
+Removed .pioenvs/nodemcu/firmware.elf
+&lt;span class="o"&gt;(&lt;/span&gt;...&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For those of you that want the detailed view of what is going on, use &lt;code&gt;-v&lt;/code&gt; to enable the verbose mode. It will get
+a lot chattier then, but you can see what the different parts of the toolchain are called, and how they work:&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;pio run -v
+&lt;span class="o"&gt;(&lt;/span&gt;...&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;A lot of detailed but very helpful messages pop up, showing what is compiled, and how, i.e., &lt;code&gt;esptool&lt;/code&gt; is used
+to combine boot loader and firmware.&lt;/p&gt;
+
+&lt;p&gt;We can use the xtensa-specific &lt;code&gt;objdump&lt;/code&gt; to inspect the firmware ELF file:&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;~/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-objdump -x .pioenvs/nodemcu/firmware.elf
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;Flashing&lt;/h2&gt;
+
+&lt;p&gt;Like the &lt;code&gt;clean&lt;/code&gt; target above, an &lt;code&gt;upload&lt;/code&gt; target exists to flash the firmware to the device. What device?
+Plugging in the NodeMCU board to the USB, the &lt;code&gt;device&lt;/code&gt; command will show:&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;pio device list
+/dev/cu.SLAB_USBtoUART
+----------------------
+Hardware ID: USB VID:PID&lt;span class="o"&gt;=&lt;/span&gt;10C4:EA60 &lt;span class="nv"&gt;SER&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;0001 &lt;span class="nv"&gt;LOCATION&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;20-1
+Description: CP2102 USB to UART Bridge Controller - CP2102 USB to UART Bridge Controller
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In this case, it&amp;rsquo;s &lt;code&gt;/dev/cu.SLAB_USBtoUART&lt;/code&gt;, using the CP2102 driver. On Linux, it should be part of the kernel and can be enabled without the need for configuration. On OSX and Windows, make sure to have the &lt;a href="http://www.silabs.com/products/mcu/pages/usbtouartbridgevcpdrivers.aspx"&gt;CP2102 driver from Silabs installed&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Since it&amp;rsquo;s the only device that is plugged in right now, PlatformIO uses it right away when I:&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;pio run --target upload
+&lt;span class="o"&gt;[&lt;/span&gt;Wed Nov 23 12:10:57 2016] Processing nodemcu &lt;span class="o"&gt;(&lt;/span&gt;platform: espressif8266, board: nodemcu, framework: arduino&lt;span class="o"&gt;)&lt;/span&gt;
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Verbose mode can be enabled via &lt;span class="sb"&gt;`&lt;/span&gt;-v, --verbose&lt;span class="sb"&gt;`&lt;/span&gt; option
+Collected 23 compatible libraries
+Looking &lt;span class="k"&gt;for &lt;/span&gt;dependencies...
+Project does not have dependencies
+Linking .pioenvs/nodemcu/firmware.elf
+Checking program size .pioenvs/nodemcu/firmware.elf
+text       data     bss     dec     hex filename
+221900     2208   29464  253572   3de84 .pioenvs/nodemcu/firmware.elf
+Looking &lt;span class="k"&gt;for &lt;/span&gt;upload port...
+Auto-detected: /dev/cu.SLAB_USBtoUART
+Uploading .pioenvs/nodemcu/firmware.bin
+Uploading 228256 bytes from .pioenvs/nodemcu/firmware.bin to flash at 0x00000000
+................................................................................ &lt;span class="o"&gt;[&lt;/span&gt; 35% &lt;span class="o"&gt;]&lt;/span&gt;
+................................................................................ &lt;span class="o"&gt;[&lt;/span&gt; 71% &lt;span class="o"&gt;]&lt;/span&gt;
+...............................................................                  &lt;span class="o"&gt;[&lt;/span&gt; 100% &lt;span class="o"&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;device&lt;/code&gt; command is also used to monitor the USB serial port, usually used for debugging:&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;pio device monitor
+&lt;span class="gp"&gt;$ &lt;/span&gt;pio device monitor
+--- Miniterm on /dev/cu.SLAB_USBtoUART  9600,8,N,1 ---
+--- Quit: Ctrl+] | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H ---
+U5
+Hi from NodeMCU
+Hi from NodeMCU
+Hi from NodeMCU
+Hi from NodeMCU
+Hi from NodeMCU
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That&amp;rsquo;s what I put in the main &lt;code&gt;loop()&lt;/code&gt;. Printing out the message now and waiting for the response.   &lt;/p&gt;
+
+&lt;p&gt;To quit the terminal session, hit &lt;code&gt;Ctrl+]&lt;/code&gt;. CTRL-C does not work here.&lt;/p&gt;
+
+&lt;h2&gt;Using Libraries&lt;/h2&gt;
+
+&lt;p&gt;There are a lot of other libraries that support developing for embedded, especially for shields and components, but where PlatformIO really shines, in my opinion, is library management.
+The &lt;code&gt;lib&lt;/code&gt; command shows the core of library management within PlatformIO:&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;pio lib
+Usage: pio lib &lt;span class="o"&gt;[&lt;/span&gt;OPTIONS] COMMAND &lt;span class="o"&gt;[&lt;/span&gt;ARGS]...
+
+Options:
+  -g, --global                 Manager global PlatformIO library storage
+  -d, --storage-dir DIRECTORY  Manage custom library storage
+  -h, --help                   Show this message and exit.
+
+Commands:
+  install    Install library
+  list       List installed libraries
+  register   Register new library
+  search     Search &lt;span class="k"&gt;for &lt;/span&gt;library
+  show       Show details about installed library
+  uninstall  Uninstall libraries
+  update     Update installed libraries
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Search is quite powerful as it browses the library catalogue. To view a web ui, go to &lt;a href="http://platformio.org/lib"&gt;http://platformio.org/lib&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;To give you just one example of its power: I wanted to simplfy logging in and found the &lt;a href="https://github.com/klenov/advancedSerial"&gt;AdvancedSerial Library&lt;/a&gt;. It is also available on PlatformIO:&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;pio lib search advancedserial
+Found 1 libraries:
+
+&lt;span class="o"&gt;[&lt;/span&gt; ID  &lt;span class="o"&gt;]&lt;/span&gt; Name             Compatibility         &lt;span class="s2"&gt;"Authors"&lt;/span&gt;: Description
+-------------------------------------------------------------------------------------------------------------------------[1095 &lt;span class="o"&gt;]&lt;/span&gt; advancedSerial   arduino, atmelavr, atmelsam, espressif8266, intel_arc32, teensy &lt;span class="s2"&gt;"Vasily Klenov"&lt;/span&gt;: An Arduino library with additions to vanilla Serial.print&lt;span class="o"&gt;()&lt;/span&gt;. Chainable methods and verbosity levels. Suitable &lt;span class="k"&gt;for &lt;/span&gt;debug messages.
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The compatibility column tells me that it should work on my ESP boards, so i install it using:&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+6
+7
+8
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;pio lib install advancedserial
+Library Storage: nodemcu2/.piolibdeps
+Looking &lt;span class="k"&gt;for &lt;/span&gt;advancedserial library &lt;span class="k"&gt;in &lt;/span&gt;registry
+Found: http://platformio.org/lib/show/1095/advancedSerial
+LibraryManager: Installing &lt;span class="nv"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1095
+Downloading  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="c"&gt;####################################]  100%&lt;/span&gt;
+Unpacking  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="c"&gt;####################################]  100%&lt;/span&gt;
+advancedSerial @ 1.2.3 has been successfully installed!
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;It went into a subdirectory in &lt;code&gt;.piolibdeps/&lt;/code&gt;, together with some examples.
+It can now be used in the sketch:&lt;/p&gt;
+&lt;pre class="highlight cpp"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;
+&lt;span class="cp"&gt;#include &amp;lt;arduino.h&amp;gt;
+#include "advancedSerial.h"
+&lt;/span&gt;
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;setup&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;Serial&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;begin&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;9600&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;aSerial&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;setPrinter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Serial&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;aSerial&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;setFilter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Level&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;vv&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+
+&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;loop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;aSerial&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;level&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Level&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;v&lt;/span&gt;&lt;span class="p"&gt;).&lt;/span&gt;&lt;span class="n"&gt;println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;"Hi from NodeMCU"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="n"&gt;delay&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;A call to &lt;code&gt;pio run&lt;/code&gt; shows that it was automatically compiled:&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;platformio run
+&lt;span class="o"&gt;[&lt;/span&gt;Wed Nov 23 12:34:00 2016] Processing nodemcu &lt;span class="o"&gt;(&lt;/span&gt;platform: espressif8266, board: nodemcu, framework: arduino&lt;span class="o"&gt;)&lt;/span&gt;
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Verbose mode can be enabled via &lt;span class="sb"&gt;`&lt;/span&gt;-v, --verbose&lt;span class="sb"&gt;`&lt;/span&gt; option
+Collected 24 compatible libraries
+Looking &lt;span class="k"&gt;for &lt;/span&gt;dependencies...
+Library Dependency Graph
+|-- &amp;lt;advancedSerial&amp;gt; v1.2.3
+Compiling .pioenvs/nodemcu/src/main.o
+Compiling .pioenvs/nodemcu/lib/advancedSerial_ID1095/advancedSerial.o
+Archiving .pioenvs/nodemcu/lib/libadvancedSerial_ID1095.a
+Indexing .pioenvs/nodemcu/lib/libadvancedSerial_ID1095.a
+Linking .pioenvs/nodemcu/firmware.elf
+Building .pioenvs/nodemcu/firmware.bin
+Calculating size .pioenvs/nodemcu/firmware.elf
+text       data     bss     dec     hex filename
+221948     2212   29480  253640   3dec8 .pioenvs/nodemcu/firmware.elf
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;Custom libraries&lt;/h2&gt;
+
+&lt;p&gt;What can you do if a library is not supported by PlatformIO? The project
+skeleton includes a &lt;code&gt;lib/&lt;/code&gt; directory, where custom library code can be placed.
+A bit of customisation is necessary, which is not overly intuitive, but
+well documented.&lt;/p&gt;
+
+&lt;p&gt;For my sample project, I use parts of Seeedstudio&amp;rsquo;s Grove Kit, and a
+4-digit display. There is code for it on &lt;a href="https://github.com/Seeed-Studio/Grove_4Digital_Display"&gt;Github&lt;/a&gt;,
+so I&amp;rsquo;m going to clone this to an extra directory:&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;mkdir vendor
+&lt;span class="gp"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;cd &lt;/span&gt;vendor
+&lt;span class="gp"&gt;$ &lt;/span&gt;git clone https://github.com/Seeed-Studio/Grove_4Digital_Display
+&lt;span class="gp"&gt;$ &lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; ..
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Important: For PlatformIO to pick up the code, &lt;code&gt;lib/&lt;/code&gt; needs another directory as shown below, &lt;code&gt;private_lib&lt;/code&gt;.
+I copy over the two files that I need:&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;mkdir lib/private_lib
+&lt;span class="gp"&gt;$ &lt;/span&gt;cp vendor/Grove_4Digital_Display/DigitalTube/TM1637.&lt;span class="k"&gt;*&lt;/span&gt; ./lib/private_lib/
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and include it in my sketch. The display is connected to the I2C D1/D2 socket, and I
+use random values to display them every second within the loop()function:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;src/main.cpp&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;
+#include &amp;lt;arduino.h&amp;gt;
+#include "advancedSerial.h"
+#include "TM1637.h"
+
+TM1637 tm1637(D1,D2);
+
+void setup() {
+    Serial.begin(9600);
+    aSerial.setPrinter(Serial);
+    aSerial.setFilter(Level::vv);
+
+    pinMode(A0,INPUT);
+    tm1637.init();
+    tm1637.set(5);
+
+    randomSeed(analogRead(0));
+}
+
+void loop() {
+    aSerial.level(Level::v).println("Hi from NodeMCU");
+    delay(1000);
+
+    int8_t disp[4];
+    disp[0] = random(0,9);
+    disp[1] = random(0,9);
+    disp[2] = random(0,9);
+    disp[3] = random(0,9);
+    tm1637.display(disp);
+}
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Upon compilation, PlatformIO picks up code in &lt;code&gt;lib/private_lib&lt;/code&gt; and builds it.&lt;/p&gt;
+&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;pio run
+&lt;span class="o"&gt;(&lt;/span&gt;...&lt;span class="o"&gt;)&lt;/span&gt;
+Collected 25 compatible libraries
+Looking &lt;span class="k"&gt;for &lt;/span&gt;dependencies...
+Library Dependency Graph
+|-- &amp;lt;private_lib&amp;gt;
+|-- &amp;lt;advancedSerial&amp;gt; v1.2.3
+Compiling .pioenvs/nodemcu/src/main.o
+&lt;span class="o"&gt;(&lt;/span&gt;...&lt;span class="o"&gt;)&lt;/span&gt;
+Compiling .pioenvs/nodemcu/lib/private_lib/TM1637.o
+Compiling .pioenvs/nodemcu/lib/advancedSerial_ID1095/advancedSerial.o
+Archiving .pioenvs/nodemcu/lib/libadvancedSerial_ID1095.a
+Archiving .pioenvs/nodemcu/lib/libprivate_lib.a
+Indexing .pioenvs/nodemcu/lib/libadvancedSerial_ID1095.a
+Indexing .pioenvs/nodemcu/lib/libprivate_lib.a
+&lt;span class="o"&gt;(&lt;/span&gt;...&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;Additional stuff&lt;/h2&gt;
+
+&lt;p&gt;PlatformIO offers a bunch of IDE integration capabilities. An IDE can be chosen
+when &lt;code&gt;init&lt;/code&gt;ialising a project, using the &lt;code&gt;--ide&lt;/code&gt; switch. At present,
+Atom, CLion, Codeblocks, Eclipse, Emacs, Netbeans, QTCreator, Sublime and Visualstudio
+are supported, and each integration is well documented.&lt;/p&gt;
+
+&lt;p&gt;This post only covered the basics. The &lt;code&gt;platformio.ini&lt;/code&gt; offers many more capabilities,
+i.e., supporting multiple targets/boards, running custom scripts before/after actions,
+etc.&lt;/p&gt;
+
+&lt;p&gt;One useful tweak for flashing ESP8266 modules is to increase the serial port Baud rate when uploading.
+In &lt;code&gt;platformio.ini&lt;/code&gt;, add an &lt;code&gt;upload_speed&lt;/code&gt; setting to the environment, i.e.:&lt;/p&gt;
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+2
+3
+4
+5
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;[env:nodemcu]
+platform = espressif8266
+board = nodemcu
+framework = arduino
+upload_speed = 921600
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Note: Uploading the ca. 220k firmware file only took 15 seconds instead of 30.&lt;/p&gt;
+
+&lt;p&gt;That&amp;rsquo;s it for now. I hope this gives you a good foundation to start from when building
+your own embedded projects. Have fun!&lt;/p&gt;
+
+&lt;p&gt;Andreas&lt;/p&gt;
+</content>
+  </entry>
   <entry>
     <title>Does REST for small devices make sense?</title>
     <link rel="alternate" href="http://blog.url.com/blog/2016/10/11/does-rest-for-small-devices-make-sense.html"/>
@@ -20,38 +766,38 @@
     </author>
     <content type="html">&lt;p&gt;When reading about maker projects, we often find case examples and remoting implementations using subsets of HTTP, i.e. requesting a status page from a RaspberryPi-based Sensor board or sending commands to small actor devices using HTTP-POST. There are quite a few blog posts and articles are about implementing a REST API on those small devices. Given that REST is well-known from the field of web development, we asked ouselves whether it would make sense to transfer REST capabilities to the field of embedded and IoT development.&lt;/p&gt;
 
-&lt;h2 id="from-web-services-to-devices-services"&gt;From web services to devices services&lt;/h2&gt;
+&lt;h2&gt;From web services to devices services&lt;/h2&gt;
 
 &lt;p&gt;When internet services offer access methods besides a browser-/HTML-based user interface, they often implement SOAP or apply REST as an architecture pattern. Both methods are about exchanging data and structured information between clients and (web) services in a network. The first, SOAP, is a standardized protocol whereas the latter, REST, is an architectural style and not a protocol.&lt;/p&gt;
 
 &lt;p&gt;The REST-style approach has become very popular over the years, so developers often choose a combination of HTTP as a transport, JSON or XML as a format for exchanging data and a mix of characteristics and conventions that make up the RESTful architecture style. What are these characteristics, and can they also be applied to small IoT devices?&lt;/p&gt;
 
-&lt;p&gt;But first: What do we mean by "small IoT devices"? A great many blog posts on this topic include SBCs such as the Raspberry Pi and comparable devices. These include multicore-processors capable of running operating systems such as Android, Linux or Windows IoT Core. They also run more or less the same software as found on servers, only with less computing power.
-For this post we'd like to concentrate on really small, constrained devices: running on a single core processor, with only Kilobytes or sometimes Megabytes of Flash memory, and definitely not a full operating system such as Linux.&lt;/p&gt;
+&lt;p&gt;But first: What do we mean by &amp;ldquo;small IoT devices&amp;rdquo;? A great many blog posts on this topic include SBCs such as the Raspberry Pi and comparable devices. These include multicore-processors capable of running operating systems such as Android, Linux or Windows IoT Core. They also run more or less the same software as found on servers, only with less computing power.
+For this post we&amp;rsquo;d like to concentrate on really small, constrained devices: running on a single core processor, with only Kilobytes or sometimes Megabytes of Flash memory, and definitely not a full operating system such as Linux.&lt;/p&gt;
 
-&lt;h2 id="rest-and-restful"&gt;REST and RESTful&lt;/h2&gt;
+&lt;h2&gt;REST and RESTful&lt;/h2&gt;
 
-&lt;p&gt;The &lt;a href="https://en.wikipedia.org/wiki/Representational_state_transfer"&gt;Wikipedias article on REST&lt;/a&gt; states a number of architectural constraints. If a service fulfils these, it can be considered "RESTful". Maybe our small devices can also be RESTful.&lt;/p&gt;
+&lt;p&gt;The &lt;a href="https://en.wikipedia.org/wiki/Representational_state_transfer"&gt;Wikipedias article on REST&lt;/a&gt; states a number of architectural constraints. If a service fulfils these, it can be considered &amp;ldquo;RESTful&amp;rdquo;. Maybe our small devices can also be RESTful.&lt;/p&gt;
 
-&lt;p&gt;The first constraint regards the &lt;strong&gt;separation between client and server&lt;/strong&gt;, and thus the separation of a user interface, i.e. a Web UI. This can also be applied to IoT devices, i.e., when the data from a sensor is sent to a cloud service or when an App on a mobile device requests the triggering of an action on the constrained device. So maybe it's not about a "client" and "server" anymore, but still two (or more) parties exchanging data, and evolving independently of each other (as long as they adhere to the API contract).&lt;/p&gt;
+&lt;p&gt;The first constraint regards the &lt;strong&gt;separation between client and server&lt;/strong&gt;, and thus the separation of a user interface, i.e. a Web UI. This can also be applied to IoT devices, i.e., when the data from a sensor is sent to a cloud service or when an App on a mobile device requests the triggering of an action on the constrained device. So maybe it&amp;rsquo;s not about a &amp;ldquo;client&amp;rdquo; and &amp;ldquo;server&amp;rdquo; anymore, but still two (or more) parties exchanging data, and evolving independently of each other (as long as they adhere to the API contract).&lt;/p&gt;
 
 &lt;p&gt;Next up are &lt;strong&gt;stateless&lt;/strong&gt; and &lt;strong&gt;cacheable&lt;/strong&gt; as important constraints for being RESTful. These requirements date back to a time when server-side application used to store a lot of client context data in server sessions, normally for a large number of clients. For constrained devices, this look easy. They simply do not have enough memory and processing capabilities to implement a server-side data storage, instead directly applying changes to physical properties: turning on a light, adjusting temperatures immediately upon request. It is not a problem to design statelessness into device behaviour. Clients can request a state-change on a device, and the device can immediately fulfill this request.&lt;/p&gt;
 
-&lt;p&gt;The requirement &lt;strong&gt;layered system&lt;/strong&gt; can be fulfilled as well. Quite a number of IoT devices are not directly accessible (i.e., because of non-IP network stacks, different radio technologies, etc.), but are accessible via IoT gateways. So it's the gateway that represents a layer in the system, adding functionality to the overall solution.&lt;/p&gt;
+&lt;p&gt;The requirement &lt;strong&gt;layered system&lt;/strong&gt; can be fulfilled as well. Quite a number of IoT devices are not directly accessible (i.e., because of non-IP network stacks, different radio technologies, etc.), but are accessible via IoT gateways. So it&amp;rsquo;s the gateway that represents a layer in the system, adding functionality to the overall solution.&lt;/p&gt;
 
-&lt;p&gt;Next i'd like to look at the requirements for a &lt;strong&gt;uniform interface&lt;/strong&gt;.
-The &lt;strong&gt;identification of resources&lt;/strong&gt; introduced a fundamental difference to accessing data within a web application. Developers are used to the convention that, for example, in an event store service, all events can be accessed by the URI &lt;code&gt;/events&lt;/code&gt;, and a single event with id 3512 under &lt;code&gt;/events/3512&lt;/code&gt;. This applies to devices as well when they are used to control different resources such as sensors and actors. Three LEDs can be accessed by, let's say &lt;code&gt;/led/1&lt;/code&gt;, &lt;code&gt;/led/2&lt;/code&gt; and &lt;code&gt;/led/3&lt;/code&gt;, as a very simple example. Resources are &lt;strong&gt;controlled by representations&lt;/strong&gt;, usually in some form of data format. For constrained devices, the choice of a data format is essential, as it is likely they can only supply a single data format, probably a binary one. This is in contrast to web services, which can easily produce and parse multiple representations, i.e., XML or JSON or HTML. So being on a very constrained environment, we'd have to make a choice here.&lt;/p&gt;
+&lt;p&gt;Next i&amp;rsquo;d like to look at the requirements for a &lt;strong&gt;uniform interface&lt;/strong&gt;.
+The &lt;strong&gt;identification of resources&lt;/strong&gt; introduced a fundamental difference to accessing data within a web application. Developers are used to the convention that, for example, in an event store service, all events can be accessed by the URI &lt;code&gt;/events&lt;/code&gt;, and a single event with id 3512 under &lt;code&gt;/events/3512&lt;/code&gt;. This applies to devices as well when they are used to control different resources such as sensors and actors. Three LEDs can be accessed by, let&amp;rsquo;s say &lt;code&gt;/led/1&lt;/code&gt;, &lt;code&gt;/led/2&lt;/code&gt; and &lt;code&gt;/led/3&lt;/code&gt;, as a very simple example. Resources are &lt;strong&gt;controlled by representations&lt;/strong&gt;, usually in some form of data format. For constrained devices, the choice of a data format is essential, as it is likely they can only supply a single data format, probably a binary one. This is in contrast to web services, which can easily produce and parse multiple representations, i.e., XML or JSON or HTML. So being on a very constrained environment, we&amp;rsquo;d have to make a choice here.&lt;/p&gt;
 
 &lt;p&gt;A very interesting constraint impacts the hypermedia model and brings application state changes into the representation of content. This would apply to a service answer’s requests for  resources with content where further, possible actions are supplied in URLs (i.e. see &lt;a href="https://en.wikipedia.org/wiki/HATEOAS"&gt;HATEOAS&lt;/a&gt;).
 It would allow a client to navigate through an application without knowledge about the content structure, because it is fully supplied within the hypermedia model.&lt;/p&gt;
 
 &lt;p&gt;Constrained devices would also be capable of fulfilling this requirement. CoAP as an IoT protocol allows for the discovery of resources on a device, specified by the Constrained RESTful Environments (CoRE) Link Format, as specified by &lt;a href="https://tools.ietf.org/html/rfc6690"&gt;RFC6690&lt;/a&gt;.&lt;/p&gt;
 
-&lt;h2 id="rest-for-constrained-devices"&gt;REST for constrained devices&lt;/h2&gt;
+&lt;h2&gt;REST for constrained devices&lt;/h2&gt;
 
 &lt;p&gt;Looking at the requirements of REST as an architectural style, we find that constrained devices are able to fulfil those, albeit on a much simpler level than web services do.&lt;/p&gt;
 
-&lt;p&gt;At one of the next blog posts, we're going to look at CoAP, the Constrained Application Protocol and see how to implement a REST API on a small device!&lt;/p&gt;
+&lt;p&gt;At one of the next blog posts, we&amp;rsquo;re going to look at CoAP, the Constrained Application Protocol and see how to implement a REST API on a small device!&lt;/p&gt;
 </content>
   </entry>
   <entry>
@@ -64,27 +810,27 @@ It would allow a client to navigate through an application without knowledge abo
       <name>Article Author</name>
     </author>
     <content type="html">&lt;p&gt;On Tuesday, 4th October, Oliver and I participated in our first German bar camp
-in Düsseldorf on the hype topic Internet of Things (IoT): &lt;a href="http://www.iotbarcamp.de/"&gt;www.iotbarcamp.de&lt;/a&gt;.
+in D&amp;uuml;sseldorf on the hype topic Internet of Things (IoT): &lt;a href="http://www.iotbarcamp.de/"&gt;www.iotbarcamp.de&lt;/a&gt;.
 I would like to share my personal notes on the talks I heard and my general
 impressions of the camp.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src="/img/iotbarcamp_IMG_0249.jpeg" alt="w100" /&gt;&lt;/p&gt;
 
 &lt;p&gt;The venue encompassed the entire floor in a modern office building located
-in Düsseldorf Golzheim, in the heart of &lt;a href="https://www.google.de/maps/place/Bennigsen-Platz,+40474+D%C3%BCsseldorf/@51.2465369,6.7680377,17z/data=!3m1!4b1!4m5!3m4!1s0x47b8c9efeef2d93d:0x552bc10c24260333!8m2!3d51.2465369!4d6.7702264]"&gt;Düsseldorf's fashion district&lt;/a&gt;.
+in D&amp;uuml;sseldorf Golzheim, in the heart of &lt;a href="https://www.google.de/maps/place/Bennigsen-Platz,+40474+D%C3%BCsseldorf/@51.2465369,6.7680377,17z/data=!3m1!4b1!4m5!3m4!1s0x47b8c9efeef2d93d:0x552bc10c24260333!8m2!3d51.2465369!4d6.7702264]"&gt;D&amp;uuml;sseldorf&amp;rsquo;s fashion district&lt;/a&gt;.
 It was a large open space with enough room to move around, a number of tables
 and chairs for taking breaks or to talk and work together with colleagues.
 So far so good.&lt;/p&gt;
 
 &lt;p&gt;The day progressed according to the time schedule starting with an introduction
 by the organisers and the opportunity for everyone in the audience to introduce
-himself/herself, together with three hashtag-like topics of one's own interests.
+himself/herself, together with three hashtag-like topics of one&amp;rsquo;s own interests.
 With 130 people I was quite worried about how long that would take, but everyone
 managed to keep it short.&lt;/p&gt;
 
 &lt;p&gt;The introduction round revealed a diverse set of interests around IoT: from business topics
 (business models, ventures) through to UX design, platform building, hardware,
-radio, smart cities, autonomous vehicles, security, prototyping, LORA.&lt;/p&gt;
+radio, smart cities, autonomous vehicles, security, prototyping, LORA.  &lt;/p&gt;
 
 &lt;p&gt;Session Planning was quite straight-forward: 23 session submissions, with 20
 available slots. After a short debate, two sessions joined, and two more were
@@ -94,13 +840,13 @@ placed during the lunch break.&lt;/p&gt;
 
 &lt;p&gt;Sascha Pallenberg’s keynote was intended to be live streamed (because of Sascha
 being in Taipeh), but due to technical problems it was recorded and played back.
-Sascha showed what "Smart City" really means being in Taipeh: autonoumous underground
+Sascha showed what &amp;ldquo;Smart City&amp;rdquo; really means being in Taipeh: autonoumous underground
 trains, NFC payment being the norm and so on. Really interesting, especially when
 comparing the situation to - lets say - countries like Germany.
 Watch the recording &lt;a href="http://www.iotbarcamp.de/live/"&gt;on the barcamp live page&lt;/a&gt;, German-only.&lt;/p&gt;
 
 &lt;p&gt;I had to hurry to finish my last slides for a session I was to give at 11:00,
-about "Data formats for the IoT: Developing for embedded and web".
+about &amp;ldquo;Data formats for the IoT: Developing for embedded and web&amp;rdquo;.
 We researched different data formats and their efficiency with regards to size a
 and compared to binary formats. For example, parsing JSON or even XML on an
 embedded device can be really hard, whereas parsing the same structure in binary
@@ -114,8 +860,8 @@ aspects, so obviously we raised a relevant topic.&lt;/p&gt;
 &lt;p&gt;You can take a look at &lt;a href="https://speakerdeck.com/aschmidt75/iot-barcamp-data-formats-for-the-internet-of-things"&gt;my slides here&lt;/a&gt;.
 This and other material will be the basis of our upcoming projects, so stay tuned :)&lt;/p&gt;
 
-&lt;p&gt;The next session I visited was "IoT Service Kit" presented by &lt;a href="https://twitter.com/drbits"&gt;Michael Hufelschulte&lt;/a&gt;
-from Cassini. The core idea is to have an offline "playground" to prototype mobile
+&lt;p&gt;The next session I visited was &amp;ldquo;IoT Service Kit&amp;rdquo; presented by &lt;a href="https://twitter.com/drbits"&gt;Michael Hufelschulte&lt;/a&gt;
+from Cassini. The core idea is to have an offline &amp;ldquo;playground&amp;rdquo; to prototype mobile
 and IoT solutions. The IoT is not only about software behind a web interface, and
 not only about hardware gadgets either: It’s also about technology becoming ubiquitous,
 so we should model and design the usage of it as well. The IoT service kit does that,
@@ -124,11 +870,11 @@ and Michael invited the audience around a table to design and run through a samp
 &lt;p&gt;I was also happy to find a session about radio technology: Crowd sourced LPWAN,
 LoraWAN and The Things Network,by &lt;a href="https://twitter.com/kgbvax"&gt;@kgbvax&lt;/a&gt;. I already
 knew a bit about LORA and read about the underlying radio technology in the slide
-presentation &lt;a href="http://static1.squarespace.com/static/54cecce7e4b054df1848b5f9/t/57489e6e07eaa0105215dc6c/1464376943218/Reversing-Lora-Knight.pdf"&gt;"Reversing LORA"&lt;/a&gt;)
+presentation &lt;a href="http://static1.squarespace.com/static/54cecce7e4b054df1848b5f9/t/57489e6e07eaa0105215dc6c/1464376943218/Reversing-Lora-Knight.pdf"&gt;&amp;ldquo;Reversing LORA&amp;rdquo;&lt;/a&gt;)
 but I still had some questions, such as what nodes to attach to a gateway, how to
 code against it, costs, regulations etc. All answered, nice session!&lt;/p&gt;
 
-&lt;p&gt;The last session i visited was "Selecting the right radio technology for IoT".
+&lt;p&gt;The last session i visited was &amp;ldquo;Selecting the right radio technology for IoT&amp;rdquo;.
 Lyn Matten from mm1 Technology introduced the various pitfalls that may arise
 when selecting a radio technology for your own project, be it security,
 energy consumption, regulations, internationalisation etc.
@@ -136,8 +882,8 @@ Bottom line: Know your requirements (as always :-) Slides: to be determined.&lt;
 
 &lt;p&gt;&lt;img src="/img/iotbarcamp_IMG_0256.jpeg" alt="w100" /&gt;&lt;/p&gt;
 
-&lt;p&gt;I'm still waiting for the session notes and the full list of links to the slides.
-I hope they're going to be published by the barcamp team, so i can supply them to you.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;m still waiting for the session notes and the full list of links to the slides.
+I hope they&amp;rsquo;re going to be published by the barcamp team, so i can supply them to you.&lt;/p&gt;
 
 &lt;p&gt;Looking forward to the next IoT Barcamp!&lt;/p&gt;
 
@@ -153,9 +899,9 @@ I hope they're going to be published by the barcamp team, so i can supply them t
     <author>
       <name>Article Author</name>
     </author>
-    <content type="html">&lt;p&gt;As we were doing some research we asked ourselves: How many skilled developers are ready to lead the way in the new era of IoT? Somebody has to implements all these billions of devices in a targeted way. Who are these people? And where are they hiding?&lt;/p&gt;
+    <content type="html">&lt;p&gt;As we were doing some research we asked ourselves: How many skilled developers are ready to lead the way in the new era of IoT? Somebody has to implements all these billions of devices in a targeted way. Who are these people? And where are they hiding?  &lt;/p&gt;
 
-&lt;p&gt;We found two research studies. The first one is mentioned in &lt;a href="https://adtmag.com/Blogs/WatersWorks/2014/01/Worldwide-Developer-Count.aspx"&gt;a blog post&lt;/a&gt; from John K. Waters, citing the "2014 Worldwide Software Developer and ICT-Skilled Worker Estimates" report from IDC. We did not order the complete study, but John cites that there are 18.5 million software developers around the world, and about 11 million of those are professionals.&lt;/p&gt;
+&lt;p&gt;We found two research studies. The first one is mentioned in &lt;a href="https://adtmag.com/Blogs/WatersWorks/2014/01/Worldwide-Developer-Count.aspx"&gt;a blog post&lt;/a&gt; from John K. Waters, citing the &amp;ldquo;2014 Worldwide Software Developer and ICT-Skilled Worker Estimates&amp;rdquo; report from IDC. We did not order the complete study, but John cites that there are 18.5 million software developers around the world, and about 11 million of those are professionals.&lt;/p&gt;
 
 &lt;p&gt;That does not reveal the exact area of work, i.e., whether they are developing desktop applications, for the web or for mobile. But it did give us a real number of the overall community of developers.&lt;/p&gt;
 
@@ -166,10 +912,10 @@ I hope they're going to be published by the barcamp team, so i can supply them t
 &lt;p&gt;Consequently, the number of professionals able to design and build IoT products is very likely to be much lower than, for example, those able to build web applications. Now building for embedded is truly different from building for the web, for a number of reasons as outlined in this &lt;a href="https://www.linkedin.com/pulse/5-differences-between-embedded-maharajan"&gt;Linked In article by the Electronic news&lt;/a&gt;, and in &lt;a href="http://www.embedded.com/electronics-news/4438618/10-skills-embedded-engineers-need-now"&gt;another post here&lt;/a&gt;:&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;Knowledge of underlying hardware and embedded operating systems&lt;/li&gt;
-  &lt;li&gt;Control of software flow, scheduling and threading (and lack there-of)&lt;/li&gt;
-  &lt;li&gt;Different programming languages&lt;/li&gt;
-  &lt;li&gt;Testing and debugging, and much more&lt;/li&gt;
+&lt;li&gt;  Knowledge of underlying hardware and embedded operating systems&lt;/li&gt;
+&lt;li&gt;  Control of software flow, scheduling and threading (and lack there-of)&lt;/li&gt;
+&lt;li&gt;  Different programming languages&lt;/li&gt;
+&lt;li&gt;  Testing and debugging, and much more&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;Can web developers adopt a system engineering mindset? Will small devices be capable of hosting “web” services? Will they run dynamic, scripted languages? Would you want to learn C or C++ to code for embedded devices or rather wait for more convenient languages?&lt;/p&gt;
@@ -187,15 +933,14 @@ Andreas&lt;/p&gt;
     <author>
       <name>Article Author</name>
     </author>
-    <content type="html">
-&lt;p&gt;Every blog has to start with a first post, so this one kicks off our blog journey into the software development of IoT – bringing together software development patterns from the Internet world and the world of Things!&lt;/p&gt;
+    <content type="html">&lt;p&gt;Every blog has to start with a first post, so this one kicks off our blog journey into the software development of IoT – bringing together software development patterns from the Internet world and the world of Things!&lt;/p&gt;
 
 &lt;p&gt;We really started this journey back in 2014 when we started designing and developing software for small, embedded devices. It was like a trip back in time. The majority of embedded IoT devices we came across were really “constrained”: small, 32-bit MCUs with only a few hundred KBs or at most 1-2 MBs of Flash, and sometimes even less SRAM to work with.&lt;/p&gt;
 
 &lt;p&gt;Given the equipment and configuration of chip modules, using C or C++ was and still is the primary way to program these devices. Of course there are a number of projects aiming to bring scripted languages such as JS and Python in the pipeline, but coding for professional products at the moment is still most likely done in plain C or C++. However, when it comes to optimization (whether for speed or battery consumption), the results can be quite sub-standard. It reminds me of the phrase “security by obscurity”, where you hide things with the aim of making your solution more secure - because nobody understands how to access it. As you might imagine, this is not very fruitful. When I look at highly optimized C code, I can see a lot of similarities.&lt;/p&gt;
 
 &lt;p&gt;Unfortunately, this kind of optimization makes a number of things worse, i.e., when writing unit tests for your code, or even when trying to integrate new team members to the stack. Coming from the software development for the web world, we were used to having fully automated build and integration testing systems, with code using third party libraries from the OSS sphere, each one with its documentation and unit tests and so forth.
-Now, developing for the embedded world, we find ourselves once again thrown back to an ancient IT era, where many things still need to be done manually.&lt;/p&gt;
+Now, developing for the embedded world, we find ourselves once again thrown back to an ancient IT era, where many things still need to be done manually.  &lt;/p&gt;
 
 &lt;p&gt;Our primary concern is about communication within the Internet of Things. In this (probably exponentially) growing network, devices need to be able to communicate with each other. This not only includes the capabilities to “speak” the same radio protocol (WiFi, ZigBee, LoRa, etc), but also touches on other aspects of the software application layer: Protocols and Data Formats, covering layers 5 to 7 of the OSI stack.&lt;/p&gt;
 
