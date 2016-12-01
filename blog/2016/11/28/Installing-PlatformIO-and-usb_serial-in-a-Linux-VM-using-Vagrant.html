@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>ThingForward  - Installing PlatformIO and usb_serial in a Linux VM using Vagrant</title>
+    <link rel="alternate" type="application/atom+xml" title="Atom Feed" href="/blog/feed.xml" />
+
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300" rel="stylesheet">
+    <!--<link href="https://fonts.googleapis.com/css?family=Scope+One" rel="stylesheet">
+-->
+    <!-- Bootstrap Core CSS -->
+    <link href="/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Social Icons -->
+    <link href="/css/bootstrap-social.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/css/blog-home.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-86465969-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
+</head>
+
+<body>
+    
+    <!-- Navigation navbar- -->
+    <nav class="navbar navbar-inverse navbar-fixed-top " role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+	              </button>
+		            <a class="navbar-brand" href="/"><img src="/img/TF_nw72.png" width="100"/></a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/blog.html">Blog</a>
+                    </li>
+                    <li>
+                        <a href="/imprint.html">Imprint</a>
+                    </li>
+<!--                    <li>
+                        <p>
+                            <a class="btn btn-social-icon btn-github" href="https://github.com/thingforward" target="_blank">
+                                <span class="fa fa-github"></span>
+                            </a>
+                        </p>
+   		    </li>
+-->
+                    <li>
+                        <p>
+                            <a class="btn btn-social-icon btn-twitter" href="https://twitter.com/thingforward" target="_blank">
+                                <span class="fa fa-twitter"></span>
+                            </a>
+                        </p>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <hr />
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Page Content -->
+    <div class="container">
+        <div class="row">
+
+            <!-- Blog Entries Column -->
+            <div class="col-md-8">
+
+                <h1 class="page-header" class="posttitle">
+			              Installing PlatformIO and usb_serial in a Linux VM using Vagrant
+                </h1>
+                <p class="lead">
+                      by <a href="https://twitter.com/aschmidt75">Andreas</a>
+                </p>
+                <p><span class="glyphicon glyphicon-time"></span> Posted on Nov 28</p>
+
+		                <h1>Installing PlatformIO and usb_serial in a Linux VM using Vagrant</h1>
+
+<p>This post describes how to set up an Ubuntu Linux VM with PlatformIO, including
+necessary steps for warping the USB-to-serial interface of development boards hardware into
+a virtual machine. PlatformIO produces a very good documentation, but sometimes
+things can become tricky when trying to set up a working environment inside a virtual machine,
+and perhaps on different Linux distributions.</p>
+
+<p>This post covers Ubuntu and ArchLinux, using VirtualBox and Vagrant.</p>
+
+<h2>Prerequisites</h2>
+
+<ul>
+<li>VirtualBox</li>
+<li>Vagrant</li>
+</ul>
+
+<h2>Determine the USB port of your board</h2>
+
+<p>Plug in your board into a free USB port.</p>
+
+<h2>Linux</h2>
+
+<p>On Linux, <code>lsusb</code> gives us all necessary information about the board&rsquo;s serial interface.
+Just search the UART bridge controller and note idVendor and idProduct, which are already
+displayed in HEX notation.</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>lsusb -v
+<span class="o">(</span>...<span class="o">)</span>
+Bus 002 Device 002: ID 10c4:ea60 Cygnal Integrated Products, Inc. CP210x UART Bridge / myAVR mySmartUSB light
+<span class="o">(</span>...<span class="o">)</span>
+idVendor           0x10c4 Cygnal Integrated Products, Inc.
+idProduct          0xea60 CP210x UART Bridge / myAVR mySmartUSB light
+</pre></td></tr></tbody></table>
+</code></pre>
+<h3>OSX</h3>
+
+<p>For osx, we use <code>ioreg</code> to show registered devices. Important: <code>-x</code> flag offers a
+hexadecimal output, which is needed by VirtualBox!</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>ioreg -p IOUSB -w0 -l -x
+<span class="o">(</span>...<span class="o">)</span>
++-o CP2102 USB to UART Bridge Controller@14200000  &lt;class AppleUSBDevice, id 0x1000009ef, registered, matched, active, busy 0 <span class="o">(</span>1557 ms<span class="o">)</span>, retain 23&gt;
+    <span class="o">{</span>
+<span class="o">(</span>...<span class="o">)</span>
+      <span class="s2">"idProduct"</span> <span class="o">=</span> 0xea60
+<span class="o">(</span>...<span class="o">)</span>
+      <span class="s2">"USB Product Name"</span> <span class="o">=</span> <span class="s2">"CP2102 USB to UART Bridge Controller"</span>
+<span class="o">(</span>...<span class="o">)</span>
+      <span class="s2">"USB Vendor Name"</span> <span class="o">=</span> <span class="s2">"Silicon Labs"</span>
+      <span class="s2">"idVendor"</span> <span class="o">=</span> 0x10c4
+<span class="o">(</span>...<span class="o">)</span>
+    <span class="o">}</span>
+</pre></td></tr></tbody></table>
+</code></pre>
+<p>Please note: we will need both <code>idProduct</code> and <code>idVendor</code> later. These two
+numbers will allow Vagrant/VirtualBox to identify your device.</p>
+
+<h2>Setting up the VM using Vagrant</h2>
+
+<h3>On Ubuntu</h3>
+
+<p>For this setup, we&rsquo;re going to take an Ubuntu1404-desktop virtual machine image.
+Why &ldquo;desktop&rdquo;? Because it usually has drivers such as <code>usbserial</code> and <code>ftdi</code>
+enabled, which we need. Server images come without these drivers, so they won&rsquo;t
+work correctly.</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>vagrant init boxcutter/ubuntu1404-desktop
+A <span class="sb">`</span>Vagrantfile<span class="sb">`</span> has been placed <span class="k">in </span>this directory. You are now
+ready to <span class="sb">`</span>vagrant up<span class="sb">`</span> your first virtual environment! Please <span class="nb">read
+</span>the comments <span class="k">in </span>the Vagrantfile as well as documentation on
+<span class="sb">`</span>vagrantup.com<span class="sb">`</span> <span class="k">for </span>more information on using Vagrant.
+</pre></td></tr></tbody></table>
+</code></pre>
+<p>In case you already have the <code>boxcutter/ubuntu1404-desktop</code>, you may want to update it:</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>vagrant box update
+<span class="o">(</span>...<span class="o">)</span>
+</pre></td></tr></tbody></table>
+</code></pre>
+<p>Edit the <code>Vagrantfile</code>, adding a block containing the USB data from above and configuring the VM:</p>
+<pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="n">config</span><span class="p">.</span><span class="nf">vm</span><span class="p">.</span><span class="nf">provider</span> <span class="s2">"virtualbox"</span> <span class="k">do</span> <span class="o">|</span><span class="n">vb</span><span class="o">|</span>
+  <span class="n">vb</span><span class="p">.</span><span class="nf">customize</span> <span class="p">[</span><span class="s2">"modifyvm"</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span> <span class="s2">"--usb"</span><span class="p">,</span> <span class="s2">"on"</span><span class="p">]</span>
+  <span class="n">vb</span><span class="p">.</span><span class="nf">customize</span> <span class="p">[</span><span class="s2">"modifyvm"</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span> <span class="s2">"--usbehci"</span><span class="p">,</span> <span class="s2">"on"</span><span class="p">]</span>
+  <span class="n">vb</span><span class="p">.</span><span class="nf">customize</span> <span class="p">[</span><span class="s2">"usbfilter"</span><span class="p">,</span> <span class="s2">"add"</span><span class="p">,</span> <span class="s2">"0"</span><span class="p">,</span>
+    <span class="s2">"--target"</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span>
+    <span class="s2">"--name"</span><span class="p">,</span> <span class="s2">"My NodeMCU device"</span><span class="p">,</span>
+    <span class="s2">"--vendorid"</span><span class="p">,</span> <span class="s2">"10c4"</span><span class="p">,</span>          <span class="c1"># your idVendor from above</span>
+    <span class="s2">"--productid"</span><span class="p">,</span> <span class="s2">"ea60"</span>          <span class="c1"># your idProduct from above</span>
+  <span class="p">]</span>
+<span class="k">end</span>
+</pre></td></tr></tbody></table>
+</code></pre>
+<p>Make sure to insert your custom VendorID and ProductID, as stated above.
+Bring the box to life:</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>vagrant up
+<span class="gp">$ </span>vagrant ssh
+</pre></td></tr></tbody></table>
+</code></pre><pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>sudo -i
+<span class="gp">root@vagrant:~# </span>modprobe usbserial
+
+<span class="gp">root@vagrant:~# </span>dmesg
+<span class="o">[</span>   44.742327] usbserial: USB Serial support registered <span class="k">for </span>generic
+<span class="o">[</span>  141.367887] usb 2-1: new full-speed USB device number 2 using ohci-pci
+<span class="o">[</span>  141.698730] usb 2-1: New USB device found, <span class="nv">idVendor</span><span class="o">=</span>10c4, <span class="nv">idProduct</span><span class="o">=</span>ea60
+<span class="o">[</span>  141.698734] usb 2-1: New USB device strings: <span class="nv">Mfr</span><span class="o">=</span>1, <span class="nv">Product</span><span class="o">=</span>2, <span class="nv">SerialNumber</span><span class="o">=</span>3
+<span class="o">[</span>  141.698735] usb 2-1: Product: CP2102 USB to UART Bridge Controller
+<span class="o">[</span>  141.698737] usb 2-1: Manufacturer: Silicon Labs
+<span class="o">[</span>  141.698737] usb 2-1: SerialNumber: 0001
+<span class="o">[</span>  141.717588] usbserial_generic 2-1:1.0: The <span class="s2">"generic"</span> usb-serial driver is only <span class="k">for </span>testing and one-off prototypes.
+<span class="o">[</span>  141.717591] usbserial_generic 2-1:1.0: Tell linux-usb@vger.kernel.org to add your device to a proper driver.
+<span class="o">[</span>  141.717592] usbserial_generic 2-1:1.0: generic converter detected
+<span class="o">[</span>  141.717720] usb 2-1: generic converter now attached to ttyUSB0
+<span class="o">[</span>  141.730578] usbcore: registered new interface driver cp210x
+<span class="o">[</span>  141.730705] usbserial: USB Serial support registered <span class="k">for </span>cp210x
+
+<span class="gp">root@vagrant:~# </span>lsusb
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 002 Device 002: ID 10c4:ea60 Cygnal Integrated Products, Inc. CP210x UART Bridge / myAVR mySmartUSB light
+Bus 002 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
+
+</pre></td></tr></tbody></table>
+</code></pre>
+<p>We&rsquo;re going to need <code>pip</code> later too, so:</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="gp">root@vagrant:~# </span>apt-get install python-pip
+</pre></td></tr></tbody></table>
+</code></pre>
+<h3>On ArchLinux</h3>
+
+<p>Luckily, the vagrant base box <code>terrywang/archlinux</code> comes with usbserial support.</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="gp">$  </span>vagrant init terrywang/archlinux
+A <span class="sb">`</span>Vagrantfile<span class="sb">`</span> has been placed <span class="k">in </span>this directory. You are now
+ready to <span class="sb">`</span>vagrant up<span class="sb">`</span> your first virtual environment! Please <span class="nb">read
+</span>the comments <span class="k">in </span>the Vagrantfile as well as documentation on
+<span class="sb">`</span>vagrantup.com<span class="sb">`</span> <span class="k">for </span>more information on using Vagrant.
+</pre></td></tr></tbody></table>
+</code></pre>
+<p>Edit the <code>Vagrantfile</code>, adding a block containing the USB data from above and configuring the VM:</p>
+<pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="n">config</span><span class="p">.</span><span class="nf">vm</span><span class="p">.</span><span class="nf">provider</span> <span class="s2">"virtualbox"</span> <span class="k">do</span> <span class="o">|</span><span class="n">vb</span><span class="o">|</span>
+  <span class="n">vb</span><span class="p">.</span><span class="nf">customize</span> <span class="p">[</span><span class="s2">"modifyvm"</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span> <span class="s2">"--usb"</span><span class="p">,</span> <span class="s2">"on"</span><span class="p">]</span>
+  <span class="n">vb</span><span class="p">.</span><span class="nf">customize</span> <span class="p">[</span><span class="s2">"modifyvm"</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span> <span class="s2">"--usbehci"</span><span class="p">,</span> <span class="s2">"on"</span><span class="p">]</span>
+  <span class="n">vb</span><span class="p">.</span><span class="nf">customize</span> <span class="p">[</span><span class="s2">"usbfilter"</span><span class="p">,</span> <span class="s2">"add"</span><span class="p">,</span> <span class="s2">"0"</span><span class="p">,</span>
+    <span class="s2">"--target"</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span>
+    <span class="s2">"--name"</span><span class="p">,</span> <span class="s2">"My NodeMCU device"</span><span class="p">,</span>
+    <span class="s2">"--vendorid"</span><span class="p">,</span> <span class="s2">"10c4"</span><span class="p">,</span>          <span class="c1"># your idVendor from above</span>
+    <span class="s2">"--productid"</span><span class="p">,</span> <span class="s2">"ea60"</span>          <span class="c1"># your idProduct from above</span>
+  <span class="p">]</span>
+<span class="k">end</span>
+</pre></td></tr></tbody></table>
+</code></pre>
+<p>Make sure that the USB interface is not already attached to another VM.</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>vagrant up
+<span class="gp">$ </span>vagrant ssh
+<span class="o">(</span>...<span class="o">)</span>
+<span class="gp">vagrant@archlinux:~$ </span>sudo modprobe usbserial
+<span class="gp">vagrant@archlinux:~$ </span>lsusb
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 002 Device 002: ID 10c4:ea60 Cygnal Integrated Products, Inc. CP210x UART Bridge / myAVR mySmartUSB light
+Bus 002 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
+</pre></td></tr></tbody></table>
+</code></pre>
+<p>Before installing PlatformIO on ArchLinux, we need to install Python2 alongside python3:</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="gp">vagrant@archlinux:~$ </span>sudo pacman -Sy
+<span class="gp">vagrant@archlinux:~$ </span>sudo pacman -S python2 python2-pip
+resolving dependencies...
+looking <span class="k">for </span>conflicting packages...
+
+Packages <span class="o">(</span>7<span class="o">)</span> python2-appdirs-1.4.0-4  python2-packaging-16.8-1  python2-pyparsing-2.1.10-1  python2-setuptools-1:28.8.0-1  python2-six-1.10.0-2  python2-2.7.12-2
+             python2-pip-8.1.2-1
+</pre></td></tr></tbody></table>
+</code></pre>
+<p>Some additional rights management, otherwise the <code>vagrant</code> user may not pip-install packages.</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>sudo -i
+<span class="gp">~# </span>groupadd staff
+<span class="gp">~# </span>gpasswd -a vagrant staff
+<span class="gp">~# </span>gpasswd -a vagrant uucp
+<span class="gp">~# </span><span class="nb">exit</span>
+</pre></td></tr></tbody></table>
+</code></pre>
+<h2>Installing PlatformIO</h2>
+
+<p>We need <code>python-pip</code> to be able to install the PlatformIO client. Our vagrant
+user needs to be part of the staff group, plus we need to adapt some permissions
+so that pip is able to install files in <code>/usr/local/bin</code>, without sudo.</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>sudo -i
+<span class="gp">~# </span>gpasswd -a vagrant staff
+<span class="gp">~# </span>chmod g+w /usr/local/bin /usr/bin /usr/lib/python2.7/site-packages/
+<span class="gp">~# </span>chgrp staff /usr/local/bin /usr/bin /usr/lib/python2.7/site-packages/
+</pre></td></tr></tbody></table>
+</code></pre>
+<p>Log off and on again, as <code>vagrant</code> user:
+<code>bash
+vagrant@vagrant:~$ exit
+$ vagrant ssh
+</code></p>
+
+<h3>Ubuntu</h3>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="gp">vagrant@vagrant:~$ </span>pip install platformio
+</pre></td></tr></tbody></table>
+</code></pre>
+<h3>ArchLinux</h3>
+
+<p>On Arch, it&rsquo;s <code>pip2</code> because we choose to run on Python 2.7, so:</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="gp">vagrant@vagrant:~$ </span>pip2 install platformio
+</pre></td></tr></tbody></table>
+</code></pre><pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+</pre></td><td class="rouge-code"><pre>Downloading/unpacking platformio
+  Downloading platformio-3.1.0-py27-none-any.whl <span class="o">(</span>113kB<span class="o">)</span>: 113kB downloaded
+<span class="o">(</span>...<span class="o">)</span>
+Successfully installed platformio lockfile click bottle requests semantic-version
+Cleaning up...
+
+
+<span class="gp">vagrant@vagrant:~$ </span>which pio
+/usr/local/bin/pio
+
+
+<span class="gp">vagrant@vagrant:~$ </span>pio
+Usage: pio <span class="o">[</span>OPTIONS] COMMAND <span class="o">[</span>ARGS]...
+
+Options:
+  --version          Show the version and exit.
+  -f, --force        Force to accept any confirmation prompts.
+  -c, --caller TEXT  Caller ID <span class="o">(</span>service<span class="o">)</span>.
+  -h, --help         Show this message and exit.
+
+Commands:
+  boards    Pre-configured Embedded Boards
+  ci        Continuous Integration
+  device    Monitor device or list existing
+  init      Initialize PlatformIO project or update existing
+  lib       Library Manager
+  platform  Platform Manager
+  run       Process project environments
+  settings  Manage PlatformIO settings
+  <span class="nb">test      </span>Unit Testing
+  update    Update installed Platforms, Packages and Libraries
+  upgrade   Upgrade PlatformIO to the latest version
+</pre></td></tr></tbody></table>
+</code></pre>
+<p>Ready :) Just a simple test, on my board:</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="gp">vagrant@archlinux:~$ </span>pio device list
+/dev/ttyUSB0
+------------
+Hardware ID: USB VID:PID<span class="o">=</span>10C4:EA60 <span class="nv">SER</span><span class="o">=</span>0001 <span class="nv">LOCATION</span><span class="o">=</span>2-1
+Description: CP2102 USB to UART Bridge Controller
+
+<span class="gp">vagrant@archlinux:~$ </span>pio device monitor
+--- Miniterm on /dev/ttyUSB0  9600,8,N,1 ---
+--- Quit: Ctrl+] | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H ---
+</pre></td></tr></tbody></table>
+</code></pre>
+<p>It&rsquo;s connected to the serial line of the board. If you see errors like <code>Unable to connect to /dev/ttyUSB0</code>, please check access rights on this device file and adjust user rights accordingly.</p>
+
+
+                <!-- go back -->
+                <ul class="pager">
+                    <li class="previous">
+                        <a href="#" onClick="history.go(-1); return false;">&larr; Back</a>
+                    </li>
+                </ul>
+
+            </div>
+
+            
+            <!-- Blog Sidebar Widgets Column -->
+            <div class="col-md-4">
+
+                <!-- Blog Search Well -->
+<!--                <div class="well">
+                    <h4>Blog Search</h4>
+                    <div class="input-group">
+                        <input type="text" class="form-control">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">
+                                <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                        </span>
+                    </div>
+                </div>
+-->
+                <!-- Blog Categories Well -->
+                <div class="well index-well">
+                    <h4>Blog Categories</h4>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <ul class="list-unstyled">
+          <li><a href="/blog/tags/general.html">General (3)</a></li>
+          <li><a href="/blog/tags/tech.html">Tech (3)</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.col-lg-6 -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+
+                <!-- Side Widget Well -->
+                <div class="well">
+                    <h4>By Date</h4>
+                    <div class="row">
+                        <div class="col-lg-6">
+			    <ul class="list-unstyled">
+          <li><a href="/blog/2016/11.html">2016-11 (2)</a></li>
+          <li><a href="/blog/2016/10.html">2016-10 (2)</a></li>
+          <li><a href="/blog/2016/09.html">2016-9 (2)</a></li>
+                            </ul>
+                        </div>
+                        <!-- /.col-lg-6 -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+
+            </div>
+
+
+        </div>
+        <!-- /.row -->
+
+	<hr>
+	    <div id="disqus_thread"></div>
+	    <script>
+
+		    /**
+		     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+		      *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+		      	var disqus_config = function () {
+		          this.page.url = "http://www.thingforward.io/blog/2016-11-28-Installing-PlatformIO-and-usb_serial-in-a-Linux-VM-using-Vagrant.html";  // Replace PAGE_URL with your page's canonical URL variable
+			        this.page.identifier = "blog/2016-11-28-Installing-PlatformIO-and-usb_serial-in-a-Linux-VM-using-Vagrant.html"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+			};
+			      (function() { // DON'T EDIT BELOW THIS LINE
+			          var d = document, s = d.createElement('script');
+				      s.src = '//thingforwardio.disqus.com/embed.js';
+				          s.setAttribute('data-timestamp', +new Date());
+					      (d.head || d.body).appendChild(s);
+					      })();
+		</script>
+		<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	<script id="dsq-count-scr" src="//thingforwardio.disqus.com/count.js" async></script>
+
+        <!-- Footer -->
+                <footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <img src="/img/TF_72dpi.png" width="100"/>
+                    <p>Copyright &copy; 2016 Thingforward.io, Digital Incubation and Growth GmbH</p>
+                </
+            </div>
+        </footer>
+
+
+    </div>
+    <!-- /.container -->
+
+    <!-- jQuery -->
+    <script src="/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/js/bootstrap.min.js"></script>
+
+<script id="dsq-count-scr" src="//thingforwardio.disqus.com/count.js" async></script>
+</body>
+
+</html>
