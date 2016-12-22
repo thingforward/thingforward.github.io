@@ -115,15 +115,12 @@
                 </p>
                 <p><span class="glyphicon glyphicon-time"></span> Posted on Nov 28</p>
 
-		                <h1>Installing PlatformIO and usb_serial in a Linux VM using Vagrant</h1>
-
-<p>This post describes how to set up an Ubuntu Linux VM with PlatformIO, including
-necessary steps for warping the USB-to-serial interface of development boards hardware into
-a virtual machine. PlatformIO produces a very good documentation, but sometimes
-things can become tricky when trying to set up a working environment inside a virtual machine,
-and perhaps on different Linux distributions.</p>
-
-<p>This post covers Ubuntu and ArchLinux, using VirtualBox and Vagrant.</p>
+		                <p>Sometimes it&rsquo;s good to have a toolchain inside a virtual machine instead of
+polluting one&rsquo;s own notebook with too many tools. This post shows how to set
+up PlatformIO&rsquo;s command line tools on Ubuntu Linux and Arch Linux, in a Vagrant/Virtualbox-based
+VM. When it comes to flashing boards over serial lines, things can become tricky, since
+one has to attach the USB port into the VM, and have the right kernel modules active.
+So this post is also about necessary steps for warping the USB-to-serial interface of development boards hardware into the virtual machine.</p>
 
 <h2>Prerequisites</h2>
 
@@ -134,13 +131,18 @@ and perhaps on different Linux distributions.</p>
 
 <h2>Determine the USB port of your board</h2>
 
+<p>First, we&rsquo;d like to find out a bit more about the USB connection from a machine to
+a device, such as a development board. Fortunately, there are tools for it, we take
+a look at Linux and OSX.</p>
+
 <p>Plug in your board into a free USB port.</p>
 
-<h2>Linux</h2>
+<h3>USB check when using Linux</h3>
 
 <p>On Linux, <code>lsusb</code> gives us all necessary information about the board&rsquo;s serial interface.
-Just search the UART bridge controller and note idVendor and idProduct, which are already
-displayed in HEX notation.</p>
+The output can be quite long, depending on how many active USB devices there are.
+Search through the output of <code>lsusb</code>, locate the UART bridge controller and note <code>idVendor</code> and <code>idProduct</code>, which are already displayed in HEX notation. Depending on the type of your board,
+the USB device name can differ, but it should contain something like <strong>uart</strong>, <strong>cp2102</strong> or <strong>ch340</strong>:</p>
 <pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
@@ -155,9 +157,11 @@ idVendor           0x10c4 Cygnal Integrated Products, Inc.
 idProduct          0xea60 CP210x UART Bridge / myAVR mySmartUSB light
 </pre></td></tr></tbody></table>
 </code></pre>
-<h3>OSX</h3>
+<p>So in this case it&rsquo;s 10c4 for the Vendor ID, and ea60 for the ProductID.</p>
 
-<p>For osx, we use <code>ioreg</code> to show registered devices. Important: <code>-x</code> flag offers a
+<h3>USB check when using OSX</h3>
+
+<p>For OSX, we use <code>ioreg</code> to show registered devices. Important: <code>-x</code> flag offers a
 hexadecimal output, which is needed by VirtualBox!</p>
 <pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
@@ -188,121 +192,16 @@ hexadecimal output, which is needed by VirtualBox!</p>
 </pre></td></tr></tbody></table>
 </code></pre>
 <p>Please note: we will need both <code>idProduct</code> and <code>idVendor</code> later. These two
-numbers will allow Vagrant/VirtualBox to identify your device.</p>
+numbers will allow Vagrant/VirtualBox to identify your device, but be sure to remove
+the <code>0x</code> prefix, which is not necessary.</p>
 
-<h2>Setting up the VM using Vagrant</h2>
+<p>The following parts show the steps for Ubuntu and Arch Linux. You may want to
+manually walk through the steps, or directly download Vagrantfiles, which are linked.</p>
 
-<h3>On Ubuntu</h3>
+<h2>Arch Linux</h2>
 
-<p>For this setup, we&rsquo;re going to take an Ubuntu1404-desktop virtual machine image.
-Why &ldquo;desktop&rdquo;? Because it usually has drivers such as <code>usbserial</code> and <code>ftdi</code>
-enabled, which we need. Server images come without these drivers, so they won&rsquo;t
-work correctly.</p>
-<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>vagrant init boxcutter/ubuntu1404-desktop
-A <span class="sb">`</span>Vagrantfile<span class="sb">`</span> has been placed <span class="k">in </span>this directory. You are now
-ready to <span class="sb">`</span>vagrant up<span class="sb">`</span> your first virtual environment! Please <span class="nb">read
-</span>the comments <span class="k">in </span>the Vagrantfile as well as documentation on
-<span class="sb">`</span>vagrantup.com<span class="sb">`</span> <span class="k">for </span>more information on using Vagrant.
-</pre></td></tr></tbody></table>
-</code></pre>
-<p>In case you already have the <code>boxcutter/ubuntu1404-desktop</code>, you may want to update it:</p>
-<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>vagrant box update
-<span class="o">(</span>...<span class="o">)</span>
-</pre></td></tr></tbody></table>
-</code></pre>
-<p>Edit the <code>Vagrantfile</code>, adding a block containing the USB data from above and configuring the VM:</p>
-<pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-</pre></td><td class="rouge-code"><pre><span class="n">config</span><span class="p">.</span><span class="nf">vm</span><span class="p">.</span><span class="nf">provider</span> <span class="s2">"virtualbox"</span> <span class="k">do</span> <span class="o">|</span><span class="n">vb</span><span class="o">|</span>
-  <span class="n">vb</span><span class="p">.</span><span class="nf">customize</span> <span class="p">[</span><span class="s2">"modifyvm"</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span> <span class="s2">"--usb"</span><span class="p">,</span> <span class="s2">"on"</span><span class="p">]</span>
-  <span class="n">vb</span><span class="p">.</span><span class="nf">customize</span> <span class="p">[</span><span class="s2">"modifyvm"</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span> <span class="s2">"--usbehci"</span><span class="p">,</span> <span class="s2">"on"</span><span class="p">]</span>
-  <span class="n">vb</span><span class="p">.</span><span class="nf">customize</span> <span class="p">[</span><span class="s2">"usbfilter"</span><span class="p">,</span> <span class="s2">"add"</span><span class="p">,</span> <span class="s2">"0"</span><span class="p">,</span>
-    <span class="s2">"--target"</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span>
-    <span class="s2">"--name"</span><span class="p">,</span> <span class="s2">"My NodeMCU device"</span><span class="p">,</span>
-    <span class="s2">"--vendorid"</span><span class="p">,</span> <span class="s2">"10c4"</span><span class="p">,</span>          <span class="c1"># your idVendor from above</span>
-    <span class="s2">"--productid"</span><span class="p">,</span> <span class="s2">"ea60"</span>          <span class="c1"># your idProduct from above</span>
-  <span class="p">]</span>
-<span class="k">end</span>
-</pre></td></tr></tbody></table>
-</code></pre>
-<p>Make sure to insert your custom VendorID and ProductID, as stated above.
-Bring the box to life:</p>
-<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>vagrant up
-<span class="gp">$ </span>vagrant ssh
-</pre></td></tr></tbody></table>
-</code></pre><pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>sudo -i
-<span class="gp">root@vagrant:~# </span>modprobe usbserial
-
-<span class="gp">root@vagrant:~# </span>dmesg
-<span class="o">[</span>   44.742327] usbserial: USB Serial support registered <span class="k">for </span>generic
-<span class="o">[</span>  141.367887] usb 2-1: new full-speed USB device number 2 using ohci-pci
-<span class="o">[</span>  141.698730] usb 2-1: New USB device found, <span class="nv">idVendor</span><span class="o">=</span>10c4, <span class="nv">idProduct</span><span class="o">=</span>ea60
-<span class="o">[</span>  141.698734] usb 2-1: New USB device strings: <span class="nv">Mfr</span><span class="o">=</span>1, <span class="nv">Product</span><span class="o">=</span>2, <span class="nv">SerialNumber</span><span class="o">=</span>3
-<span class="o">[</span>  141.698735] usb 2-1: Product: CP2102 USB to UART Bridge Controller
-<span class="o">[</span>  141.698737] usb 2-1: Manufacturer: Silicon Labs
-<span class="o">[</span>  141.698737] usb 2-1: SerialNumber: 0001
-<span class="o">[</span>  141.717588] usbserial_generic 2-1:1.0: The <span class="s2">"generic"</span> usb-serial driver is only <span class="k">for </span>testing and one-off prototypes.
-<span class="o">[</span>  141.717591] usbserial_generic 2-1:1.0: Tell linux-usb@vger.kernel.org to add your device to a proper driver.
-<span class="o">[</span>  141.717592] usbserial_generic 2-1:1.0: generic converter detected
-<span class="o">[</span>  141.717720] usb 2-1: generic converter now attached to ttyUSB0
-<span class="o">[</span>  141.730578] usbcore: registered new interface driver cp210x
-<span class="o">[</span>  141.730705] usbserial: USB Serial support registered <span class="k">for </span>cp210x
-
-<span class="gp">root@vagrant:~# </span>lsusb
-Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-Bus 002 Device 002: ID 10c4:ea60 Cygnal Integrated Products, Inc. CP210x UART Bridge / myAVR mySmartUSB light
-Bus 002 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
-
-</pre></td></tr></tbody></table>
-</code></pre>
-<p>We&rsquo;re going to need <code>pip</code> later too, so:</p>
-<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre><span class="gp">root@vagrant:~# </span>apt-get install python-pip
-</pre></td></tr></tbody></table>
-</code></pre>
-<h3>On ArchLinux</h3>
-
-<p>Luckily, the vagrant base box <code>terrywang/archlinux</code> comes with usbserial support.</p>
+<p>Luckily, the vagrant base box <code>terrywang/archlinux</code> comes with <code>usbserial</code> support.
+For the complete Vagrantfile, see <a href="https://gist.github.com/thingforward/0fef663b409350c946287cbf3f890907">this gist</a>.</p>
 <pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
@@ -338,7 +237,9 @@ ready to <span class="sb">`</span>vagrant up<span class="sb">`</span> your first
 <span class="k">end</span>
 </pre></td></tr></tbody></table>
 </code></pre>
-<p>Make sure that the USB interface is not already attached to another VM.</p>
+<p><strong>Make sure to insert your custom VendorID and ProductID, as described above.</strong>
+Plus, make sure that the USB interface is not already attached to another VM, because
+it will be locked by that VM.</p>
 <pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
@@ -357,7 +258,8 @@ Bus 002 Device 002: ID 10c4:ea60 Cygnal Integrated Products, Inc. CP210x UART Br
 Bus 002 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
 </pre></td></tr></tbody></table>
 </code></pre>
-<p>Before installing PlatformIO on ArchLinux, we need to install Python2 alongside python3:</p>
+<p>PlatformIO requires Python 2.7, so before installing PlatformIO on ArchLinux, we
+need to install Python2 alongside python3:</p>
 <pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
@@ -374,48 +276,26 @@ Packages <span class="o">(</span>7<span class="o">)</span> python2-appdirs-1.4.0
              python2-pip-8.1.2-1
 </pre></td></tr></tbody></table>
 </code></pre>
-<p>Some additional rights management, otherwise the <code>vagrant</code> user may not pip-install packages.</p>
+<p>Likewise the steps for Ubuntu above, we need some additional rights management, otherwise the <code>vagrant</code> user may not pip-install packages, or access devices.</p>
 <pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
 4
 5
+6
+7
 </pre></td><td class="rouge-code"><pre><span class="gp">$ </span>sudo -i
 <span class="gp">~# </span>groupadd staff
 <span class="gp">~# </span>gpasswd -a vagrant staff
 <span class="gp">~# </span>gpasswd -a vagrant uucp
+<span class="gp">~# </span>chmod g+w /usr/local/bin /usr/bin /usr/lib/python2.7/site-packages/
+<span class="gp">~# </span>chgrp staff /usr/local/bin /usr/bin /usr/lib/python2.7/site-packages/
 <span class="gp">~# </span><span class="nb">exit</span>
 </pre></td></tr></tbody></table>
 </code></pre>
-<h2>Installing PlatformIO</h2>
-
-<p>We need <code>python-pip</code> to be able to install the PlatformIO client. Our vagrant
-user needs to be part of the staff group, plus we need to adapt some permissions
-so that pip is able to install files in <code>/usr/local/bin</code>, without sudo.</p>
-<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>sudo -i
-<span class="gp">~# </span>gpasswd -a vagrant staff
-<span class="gp">~# </span>chmod g+w /usr/local/bin /usr/bin /usr/lib/python2.7/site-packages/
-<span class="gp">~# </span>chgrp staff /usr/local/bin /usr/bin /usr/lib/python2.7/site-packages/
-</pre></td></tr></tbody></table>
-</code></pre>
-<p>Log off and on again, as <code>vagrant</code> user:
-<code>bash
-vagrant@vagrant:~$ exit
-$ vagrant ssh
-</code></p>
-
-<h3>Ubuntu</h3>
-<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre><span class="gp">vagrant@vagrant:~$ </span>pip install platformio
-</pre></td></tr></tbody></table>
-</code></pre>
-<h3>ArchLinux</h3>
-
-<p>On Arch, it&rsquo;s <code>pip2</code> because we choose to run on Python 2.7, so:</p>
+<p>Making these directories group-writeable and changing the group to staff is a small
+workaround, and should be reversed afterwards things are installed.
+We&rsquo;re now able to install PlatformIO via <code>pip</code>. On Arch, it&rsquo;s <code>pip2</code> because we choose to run on Python 2.7, so:</p>
 <pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 </pre></td><td class="rouge-code"><pre><span class="gp">vagrant@vagrant:~$ </span>pip2 install platformio
 </pre></td></tr></tbody></table>
@@ -485,7 +365,150 @@ Commands:
   upgrade   Upgrade PlatformIO to the latest version
 </pre></td></tr></tbody></table>
 </code></pre>
-<p>Ready :) Just a simple test, on my board:</p>
+<h2>Ubuntu</h2>
+
+<p>For this setup, we&rsquo;re going to take an Ubuntu1404-desktop virtual machine image.
+Why &ldquo;desktop&rdquo;? Because it usually has drivers such as <code>usbserial</code> and <code>ftdi</code>
+enabled, which we need. Server or Cloud images come without these drivers, so it won&rsquo;t
+work correctly.</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>vagrant init boxcutter/ubuntu1404-desktop
+A <span class="sb">`</span>Vagrantfile<span class="sb">`</span> has been placed <span class="k">in </span>this directory. You are now
+ready to <span class="sb">`</span>vagrant up<span class="sb">`</span> your first virtual environment! Please <span class="nb">read
+</span>the comments <span class="k">in </span>the Vagrantfile as well as documentation on
+<span class="sb">`</span>vagrantup.com<span class="sb">`</span> <span class="k">for </span>more information on using Vagrant.
+</pre></td></tr></tbody></table>
+</code></pre>
+<p>In case you already have the <code>boxcutter/ubuntu1404-desktop</code>, you may want to update it:</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>vagrant box update
+<span class="o">(</span>...<span class="o">)</span>
+</pre></td></tr></tbody></table>
+</code></pre>
+<p>Edit the <code>Vagrantfile</code>, adding a block containing the USB data from above and configuring the VM:</p>
+<pre class="highlight ruby"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="n">config</span><span class="p">.</span><span class="nf">vm</span><span class="p">.</span><span class="nf">provider</span> <span class="s2">"virtualbox"</span> <span class="k">do</span> <span class="o">|</span><span class="n">vb</span><span class="o">|</span>
+  <span class="n">vb</span><span class="p">.</span><span class="nf">customize</span> <span class="p">[</span><span class="s2">"modifyvm"</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span> <span class="s2">"--usb"</span><span class="p">,</span> <span class="s2">"on"</span><span class="p">]</span>
+  <span class="n">vb</span><span class="p">.</span><span class="nf">customize</span> <span class="p">[</span><span class="s2">"modifyvm"</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span> <span class="s2">"--usbehci"</span><span class="p">,</span> <span class="s2">"on"</span><span class="p">]</span>
+  <span class="n">vb</span><span class="p">.</span><span class="nf">customize</span> <span class="p">[</span><span class="s2">"usbfilter"</span><span class="p">,</span> <span class="s2">"add"</span><span class="p">,</span> <span class="s2">"0"</span><span class="p">,</span>
+    <span class="s2">"--target"</span><span class="p">,</span> <span class="ss">:id</span><span class="p">,</span>
+    <span class="s2">"--name"</span><span class="p">,</span> <span class="s2">"My NodeMCU device"</span><span class="p">,</span>
+    <span class="s2">"--vendorid"</span><span class="p">,</span> <span class="s2">"10c4"</span><span class="p">,</span>          <span class="c1"># your idVendor from above</span>
+    <span class="s2">"--productid"</span><span class="p">,</span> <span class="s2">"ea60"</span>          <span class="c1"># your idProduct from above</span>
+  <span class="p">]</span>
+<span class="k">end</span>
+</pre></td></tr></tbody></table>
+</code></pre>
+<p><strong>Make sure to insert your custom VendorID and ProductID, as described above.</strong></p>
+
+<p>Bring the box to life:</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>vagrant up
+<span class="gp">$ </span>vagrant ssh
+</pre></td></tr></tbody></table>
+</code></pre>
+<p>We can check if the device is active inside the VM with commands such as <code>modprobe</code>, <code>dmesg</code>
+and <code>lsusb</code>:</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>sudo -i
+<span class="gp">root@vagrant:~# </span>modprobe usbserial
+
+<span class="gp">root@vagrant:~# </span>dmesg
+<span class="o">[</span>   44.742327] usbserial: USB Serial support registered <span class="k">for </span>generic
+<span class="o">[</span>  141.367887] usb 2-1: new full-speed USB device number 2 using ohci-pci
+<span class="o">[</span>  141.698730] usb 2-1: New USB device found, <span class="nv">idVendor</span><span class="o">=</span>10c4, <span class="nv">idProduct</span><span class="o">=</span>ea60
+<span class="o">[</span>  141.698734] usb 2-1: New USB device strings: <span class="nv">Mfr</span><span class="o">=</span>1, <span class="nv">Product</span><span class="o">=</span>2, <span class="nv">SerialNumber</span><span class="o">=</span>3
+<span class="o">[</span>  141.698735] usb 2-1: Product: CP2102 USB to UART Bridge Controller
+<span class="o">[</span>  141.698737] usb 2-1: Manufacturer: Silicon Labs
+<span class="o">[</span>  141.698737] usb 2-1: SerialNumber: 0001
+<span class="o">[</span>  141.717588] usbserial_generic 2-1:1.0: The <span class="s2">"generic"</span> usb-serial driver is only <span class="k">for </span>testing and one-off prototypes.
+<span class="o">[</span>  141.717591] usbserial_generic 2-1:1.0: Tell linux-usb@vger.kernel.org to add your device to a proper driver.
+<span class="o">[</span>  141.717592] usbserial_generic 2-1:1.0: generic converter detected
+<span class="o">[</span>  141.717720] usb 2-1: generic converter now attached to ttyUSB0
+<span class="o">[</span>  141.730578] usbcore: registered new interface driver cp210x
+<span class="o">[</span>  141.730705] usbserial: USB Serial support registered <span class="k">for </span>cp210x
+
+<span class="gp">root@vagrant:~# </span>lsusb
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 002 Device 002: ID 10c4:ea60 Cygnal Integrated Products, Inc. CP210x UART Bridge / myAVR mySmartUSB light
+Bus 002 Device 001: ID 1d6b:0001 Linux Foundation 1.1 root hub
+
+</pre></td></tr></tbody></table>
+</code></pre>
+<p>The output of <code>lsusb</code> showed that the USB device is active within the Virtual Machine.</p>
+
+<p>A good way to install PlatformIO is via <code>pip</code>, which we install here:</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="gp">root@vagrant:~# </span>apt-get install python-pip
+</pre></td></tr></tbody></table>
+</code></pre>
+<p>Unfortunately we need some permission tweaking. The <code>vagrant</code> user needs to be
+part of the <code>staff</code> group, plus we need to adapt some permissions
+so that <code>pip</code> is able to install files in <code>/usr/local/bin</code>, without sudo (because we&rsquo;d like
+to run platformio without sudo, too).</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>sudo -i
+<span class="gp">~# </span>gpasswd -a vagrant staff
+<span class="gp">~# </span>chmod g+w /usr/local/bin /usr/bin /usr/lib/python2.7/site-packages/
+<span class="gp">~# </span>chgrp staff /usr/local/bin /usr/bin /usr/lib/python2.7/site-packages/
+</pre></td></tr></tbody></table>
+</code></pre>
+<p>Log off and on again, as <code>vagrant</code> user, so the new permissions become active:</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="gp">vagrant@vagrant:~$ </span><span class="nb">exit</span>
+<span class="gp">$ </span>vagrant ssh
+</pre></td></tr></tbody></table>
+</code></pre>
+<p>Then we can install PlatformIO by:</p>
+<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="gp">vagrant@vagrant:~$ </span>pip install platformio
+</pre></td></tr></tbody></table>
+</code></pre>
+<h2>Testing</h2>
+
+<p>Now you should be able to flash firmware and monitor your device over serial
+from within the Virtual Machine. Just a simple test, for my board:</p>
 <pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
