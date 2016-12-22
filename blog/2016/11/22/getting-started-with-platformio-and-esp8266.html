@@ -142,21 +142,18 @@ documentation, make sure to check <a href="http://docs.platformio.org/en/stable/
 5
 6
 7
-8
-9
-10
 </pre></td><td class="rouge-code"><pre><span class="gp">$ </span>pip search platformio
 platformio <span class="o">(</span>3.1.0<span class="o">)</span>  - An open <span class="nb">source </span>ecosystem <span class="k">for </span>IoT development. Cross-platform build system and library manager. Continuous and IDE integration. Arduino, ESP8266 and ARM mbed compatible
-  INSTALLED: 3.1.0 <span class="o">(</span>latest<span class="o">)</span>
 
 <span class="gp">$ </span>brew info platformio
 platformio: stable 3.1.0 <span class="o">(</span>bottled<span class="o">)</span>
 Ecosystem <span class="k">for </span>IoT development <span class="o">(</span>Arduino and ARM mbed compatible<span class="o">)</span>
 http://platformio.org
-Not installed
-From: https://github.com/Homebrew/homebrew-core/blob/master/Formula/platformio.rb
 </pre></td></tr></tbody></table>
 </code></pre>
+<p>So either use <code>pip install platformio</code> or <code>brew install platformio</code>, which should run
+without problems.</p>
+
 <p>What you get is an executable, <code>platformio</code>, abbreviated as <code>pio</code>, so:</p>
 <pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
@@ -244,7 +241,7 @@ the complete catalogue on the <a href="http://platformio.org/boards">web site</a
 <p>To create a project, we&rsquo;ll use the <code>init</code> command. It takes a board id (I start with NodeMCU), a directory and
 an ide integration, all of which are optional. I choose CLion as the IDE integration, although a number of others are also viable alternatives.
 If a directory is not given, it will create the project in the current directory, which is what I do:</p>
-<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+<pre class="highlight plaintext"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
 4
@@ -278,40 +275,40 @@ If a directory is not given, it will create the project in the current directory
 32
 33
 34
-</pre></td><td class="rouge-code"><pre><span class="gp">~$ </span>mkdir esp-project-1
-<span class="gp">~$ </span><span class="nb">cd </span>esp-project-1/
-<span class="gp">~/esp-project-1$ </span>pio init -b nodemcu --ide clion
-<span class="o">(</span>...<span class="o">))</span>
+</pre></td><td class="rouge-code"><pre>~$ mkdir esp-project-1
+~$ cd esp-project-1/
+~/esp-project-1$ pio init -b nodemcu --ide clion
+(...))
 
-The current working directory /home/ubuntu/esp-project-1 will be used <span class="k">for </span>project.
+The current working directory /home/ubuntu/esp-project-1 will be used for project.
 You can specify another project directory via
-<span class="sb">`</span>platformio init -d %PATH_TO_THE_PROJECT_DIR%<span class="sb">`</span> command.
+platformio init -d %PATH_TO_THE_PROJECT_DIR% command.
 
-The next files/directories have been created <span class="k">in</span> /home/ubuntu/esp-project-1
+The next files/directories have been created in /home/ubuntu/esp-project-1
 platformio.ini - Project Configuration File
-src - Put your <span class="nb">source </span>files here
-lib - Put here project specific <span class="o">(</span>private<span class="o">)</span> libraries
+src - Put your source files here
+lib - Put here project specific (private) libraries
 PlatformManager: Installing espressif8266
 Downloading...
-Unpacking  <span class="o">[</span><span class="c">####################################]  100%</span>
+Unpacking  [####################################]  100%
 espressif8266 @ 1.2.0 has been successfully installed!
 PackageManager: Installing toolchain-xtensa @ ~1.40802.0
-Downloading  <span class="o">[</span><span class="c">####################################]  100%</span>
-Unpacking  <span class="o">[</span><span class="c">####################################]  100%</span>
+Downloading  [####################################]  100%
+Unpacking  [####################################]  100%
 toolchain-xtensa @ 1.40802.0 has been successfully installed!
 PackageManager: Installing tool-esptool @ ~1.409.0
-Downloading  <span class="o">[</span><span class="c">####################################]  100%</span>
-Unpacking  <span class="o">[</span><span class="c">####################################]  100%</span>
+Downloading  [####################################]  100%
+Unpacking  [####################################]  100%
 tool-esptool @ 1.409.0 has been successfully installed!
 PackageManager: Installing tool-espotapy @ ~1.0.0
-Downloading  <span class="o">[</span><span class="c">####################################]  100%</span>
-Unpacking  <span class="o">[</span><span class="c">####################################]  100%</span>
+Downloading  [####################################]  100%
+Unpacking  [####################################]  100%
 tool-espotapy @ 1.0.0 has been successfully installed!
-The platform <span class="s1">'espressif8266'</span> has been successfully installed!
+The platform espressif8266 has been successfully installed!
 The rest of packages will be installed automatically depending on your build environment.
 
 Project has been successfully initialized!
-<span class="o">(</span>...<span class="o">)</span>
+(...)
 </pre></td></tr></tbody></table>
 </code></pre>
 <p>That took a while, because PlatformIO managed the complete toolchain necessary
@@ -326,7 +323,7 @@ what packages have been installed:</p>
 </ul>
 
 <p>Where did they go? <code>~/.platformio</code>:</p>
-<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+<pre class="highlight plaintext"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
 4
@@ -335,7 +332,7 @@ what packages have been installed:</p>
 7
 8
 9
-</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>ls -al ~/.platformio/packages/
+</pre></td><td class="rouge-code"><pre>$ ls -al ~/.platformio/packages/
 total 28
 drwxrwxr-x 7 ubuntu ubuntu 4096 Nov 23 10:45 .
 drwxrwxr-x 6 ubuntu ubuntu 4096 Nov 23 10:45 ..
@@ -348,7 +345,7 @@ drwx------ 4 ubuntu ubuntu 4096 Nov 23 10:45 tool-scons
 </code></pre>
 <p>So that is quite neat and separated by user environments. Plus, of course, we now have a skeleton
 project in our current directory:</p>
-<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+<pre class="highlight plaintext"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
 4
@@ -361,7 +358,7 @@ project in our current directory:</p>
 11
 12
 13
-</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>ls -al
+</pre></td><td class="rouge-code"><pre>$ ls -al
 total 48
 drwxrwxr-x 6 ubuntu ubuntu 4096 Nov 23 10:45 .
 drwxr-xr-x 8 ubuntu ubuntu 4096 Nov 23 10:45 ..
@@ -381,7 +378,7 @@ drwxrwxr-x 2 ubuntu ubuntu 4096 Nov 23 10:45 src
 <p>PlatformIO manages a <code>platformio.ini</code> file where additional settings can be made as well as a few extras,e.g., a <code>.gitignore</code>, TravisCI configuration and CMake files. <code>lib/</code> and
 <code>src/</code> are empty, so let&rsquo;s add a simple sketch.</p>
 
-<p><code>src/main.cpp</code>:</p>
+<p>Create a file <code>src/main.cpp</code> and place to following contents in it:</p>
 <pre class="highlight cpp"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
@@ -392,9 +389,7 @@ drwxrwxr-x 2 ubuntu ubuntu 4096 Nov 23 10:45 src
 8
 9
 10
-11
-</pre></td><td class="rouge-code"><pre>
-<span class="cp">#include &lt;arduino.h&gt;
+</pre></td><td class="rouge-code"><pre><span class="cp">#include &lt;arduino.h&gt;
 </span>
 <span class="kt">void</span> <span class="nf">setup</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">Serial</span><span class="p">.</span><span class="n">begin</span><span class="p">(</span><span class="mi">9600</span><span class="p">);</span>
@@ -406,7 +401,7 @@ drwxrwxr-x 2 ubuntu ubuntu 4096 Nov 23 10:45 src
 <span class="p">}</span>
 </pre></td></tr></tbody></table>
 </code></pre>
-<p>PlatformIO&rsquo;s <code>run</code> command takes care of the build:</p>
+<p>PlatformIO&rsquo;s <code>run</code> command takes care of the whole build process:</p>
 <pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
@@ -595,15 +590,17 @@ Commands:
 3
 4
 5
+6
 </pre></td><td class="rouge-code"><pre><span class="gp">$ </span>pio lib search advancedserial
 Found 1 libraries:
 
 <span class="o">[</span> ID  <span class="o">]</span> Name             Compatibility         <span class="s2">"Authors"</span>: Description
--------------------------------------------------------------------------------------------------------------------------[1095 <span class="o">]</span> advancedSerial   arduino, atmelavr, atmelsam, espressif8266, intel_arc32, teensy <span class="s2">"Vasily Klenov"</span>: An Arduino library with additions to vanilla Serial.print<span class="o">()</span>. Chainable methods and verbosity levels. Suitable <span class="k">for </span>debug messages.
+-------------------------------------------------------------------------------------------------------------------------
+<span class="o">[</span>1095 <span class="o">]</span> advancedSerial   arduino, atmelavr, atmelsam, espressif8266, intel_arc32, teensy <span class="s2">"Vasily Klenov"</span>: An Arduino library with additions to vanilla Serial.print<span class="o">()</span>. Chainable methods and verbosity levels. Suitable <span class="k">for </span>debug messages.
 </pre></td></tr></tbody></table>
 </code></pre>
 <p>The compatibility column tells me that it should work on my ESP boards, so i install it using:</p>
-<pre class="highlight shell"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+<pre class="highlight plaintext"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
 4
@@ -611,13 +608,15 @@ Found 1 libraries:
 6
 7
 8
-</pre></td><td class="rouge-code"><pre><span class="gp">$ </span>pio lib install advancedserial
+9
+</pre></td><td class="rouge-code"><pre>$ pio lib install advancedserial
+
 Library Storage: nodemcu2/.piolibdeps
-Looking <span class="k">for </span>advancedserial library <span class="k">in </span>registry
+Looking for advancedserial library in registry
 Found: http://platformio.org/lib/show/1095/advancedSerial
-LibraryManager: Installing <span class="nv">id</span><span class="o">=</span>1095
-Downloading  <span class="o">[</span><span class="c">####################################]  100%</span>
-Unpacking  <span class="o">[</span><span class="c">####################################]  100%</span>
+LibraryManager: Installing id=1095
+Downloading  [####################################]  100%
+Unpacking  [####################################]  100%
 advancedSerial @ 1.2.3 has been successfully installed!
 </pre></td></tr></tbody></table>
 </code></pre>

@@ -440,7 +440,7 @@ Description: CP2102 USB to UART Bridge Controller
     <link rel="alternate" href="http://blog.url.com/blog/2016/11/22/getting-started-with-platformio-and-esp8266.html"/>
     <id>http://blog.url.com/blog/2016/11/22/getting-started-with-platformio-and-esp8266.html</id>
     <published>2016-11-22T11:25:00+01:00</published>
-    <updated>2016-11-28T13:48:56+01:00</updated>
+    <updated>2016-12-22T16:42:58+01:00</updated>
     <author>
       <name>Article Author</name>
     </author>
@@ -471,21 +471,18 @@ documentation, make sure to check &lt;a href="http://docs.platformio.org/en/stab
 5
 6
 7
-8
-9
-10
 &lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;pip search platformio
 platformio &lt;span class="o"&gt;(&lt;/span&gt;3.1.0&lt;span class="o"&gt;)&lt;/span&gt;  - An open &lt;span class="nb"&gt;source &lt;/span&gt;ecosystem &lt;span class="k"&gt;for &lt;/span&gt;IoT development. Cross-platform build system and library manager. Continuous and IDE integration. Arduino, ESP8266 and ARM mbed compatible
-  INSTALLED: 3.1.0 &lt;span class="o"&gt;(&lt;/span&gt;latest&lt;span class="o"&gt;)&lt;/span&gt;
 
 &lt;span class="gp"&gt;$ &lt;/span&gt;brew info platformio
 platformio: stable 3.1.0 &lt;span class="o"&gt;(&lt;/span&gt;bottled&lt;span class="o"&gt;)&lt;/span&gt;
 Ecosystem &lt;span class="k"&gt;for &lt;/span&gt;IoT development &lt;span class="o"&gt;(&lt;/span&gt;Arduino and ARM mbed compatible&lt;span class="o"&gt;)&lt;/span&gt;
 http://platformio.org
-Not installed
-From: https://github.com/Homebrew/homebrew-core/blob/master/Formula/platformio.rb
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
 &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So either use &lt;code&gt;pip install platformio&lt;/code&gt; or &lt;code&gt;brew install platformio&lt;/code&gt;, which should run
+without problems.&lt;/p&gt;
+
 &lt;p&gt;What you get is an executable, &lt;code&gt;platformio&lt;/code&gt;, abbreviated as &lt;code&gt;pio&lt;/code&gt;, so:&lt;/p&gt;
 &lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
 2
@@ -573,7 +570,7 @@ the complete catalogue on the &lt;a href="http://platformio.org/boards"&gt;web s
 &lt;p&gt;To create a project, we&amp;rsquo;ll use the &lt;code&gt;init&lt;/code&gt; command. It takes a board id (I start with NodeMCU), a directory and
 an ide integration, all of which are optional. I choose CLion as the IDE integration, although a number of others are also viable alternatives.
 If a directory is not given, it will create the project in the current directory, which is what I do:&lt;/p&gt;
-&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
 2
 3
 4
@@ -607,40 +604,40 @@ If a directory is not given, it will create the project in the current directory
 32
 33
 34
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;~$ &lt;/span&gt;mkdir esp-project-1
-&lt;span class="gp"&gt;~$ &lt;/span&gt;&lt;span class="nb"&gt;cd &lt;/span&gt;esp-project-1/
-&lt;span class="gp"&gt;~/esp-project-1$ &lt;/span&gt;pio init -b nodemcu --ide clion
-&lt;span class="o"&gt;(&lt;/span&gt;...&lt;span class="o"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;~$ mkdir esp-project-1
+~$ cd esp-project-1/
+~/esp-project-1$ pio init -b nodemcu --ide clion
+(...))
 
-The current working directory /home/ubuntu/esp-project-1 will be used &lt;span class="k"&gt;for &lt;/span&gt;project.
+The current working directory /home/ubuntu/esp-project-1 will be used for project.
 You can specify another project directory via
-&lt;span class="sb"&gt;`&lt;/span&gt;platformio init -d %PATH_TO_THE_PROJECT_DIR%&lt;span class="sb"&gt;`&lt;/span&gt; command.
+platformio init -d %PATH_TO_THE_PROJECT_DIR% command.
 
-The next files/directories have been created &lt;span class="k"&gt;in&lt;/span&gt; /home/ubuntu/esp-project-1
+The next files/directories have been created in /home/ubuntu/esp-project-1
 platformio.ini - Project Configuration File
-src - Put your &lt;span class="nb"&gt;source &lt;/span&gt;files here
-lib - Put here project specific &lt;span class="o"&gt;(&lt;/span&gt;private&lt;span class="o"&gt;)&lt;/span&gt; libraries
+src - Put your source files here
+lib - Put here project specific (private) libraries
 PlatformManager: Installing espressif8266
 Downloading...
-Unpacking  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="c"&gt;####################################]  100%&lt;/span&gt;
+Unpacking  [####################################]  100%
 espressif8266 @ 1.2.0 has been successfully installed!
 PackageManager: Installing toolchain-xtensa @ ~1.40802.0
-Downloading  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="c"&gt;####################################]  100%&lt;/span&gt;
-Unpacking  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="c"&gt;####################################]  100%&lt;/span&gt;
+Downloading  [####################################]  100%
+Unpacking  [####################################]  100%
 toolchain-xtensa @ 1.40802.0 has been successfully installed!
 PackageManager: Installing tool-esptool @ ~1.409.0
-Downloading  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="c"&gt;####################################]  100%&lt;/span&gt;
-Unpacking  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="c"&gt;####################################]  100%&lt;/span&gt;
+Downloading  [####################################]  100%
+Unpacking  [####################################]  100%
 tool-esptool @ 1.409.0 has been successfully installed!
 PackageManager: Installing tool-espotapy @ ~1.0.0
-Downloading  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="c"&gt;####################################]  100%&lt;/span&gt;
-Unpacking  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="c"&gt;####################################]  100%&lt;/span&gt;
+Downloading  [####################################]  100%
+Unpacking  [####################################]  100%
 tool-espotapy @ 1.0.0 has been successfully installed!
-The platform &lt;span class="s1"&gt;'espressif8266'&lt;/span&gt; has been successfully installed!
+The platform espressif8266 has been successfully installed!
 The rest of packages will be installed automatically depending on your build environment.
 
 Project has been successfully initialized!
-&lt;span class="o"&gt;(&lt;/span&gt;...&lt;span class="o"&gt;)&lt;/span&gt;
+(...)
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;That took a while, because PlatformIO managed the complete toolchain necessary
@@ -655,7 +652,7 @@ what packages have been installed:&lt;/p&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;Where did they go? &lt;code&gt;~/.platformio&lt;/code&gt;:&lt;/p&gt;
-&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
 2
 3
 4
@@ -664,7 +661,7 @@ what packages have been installed:&lt;/p&gt;
 7
 8
 9
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;ls -al ~/.platformio/packages/
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;$ ls -al ~/.platformio/packages/
 total 28
 drwxrwxr-x 7 ubuntu ubuntu 4096 Nov 23 10:45 .
 drwxrwxr-x 6 ubuntu ubuntu 4096 Nov 23 10:45 ..
@@ -677,7 +674,7 @@ drwx------ 4 ubuntu ubuntu 4096 Nov 23 10:45 tool-scons
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;So that is quite neat and separated by user environments. Plus, of course, we now have a skeleton
 project in our current directory:&lt;/p&gt;
-&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
 2
 3
 4
@@ -690,7 +687,7 @@ project in our current directory:&lt;/p&gt;
 11
 12
 13
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;ls -al
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;$ ls -al
 total 48
 drwxrwxr-x 6 ubuntu ubuntu 4096 Nov 23 10:45 .
 drwxr-xr-x 8 ubuntu ubuntu 4096 Nov 23 10:45 ..
@@ -710,7 +707,7 @@ drwxrwxr-x 2 ubuntu ubuntu 4096 Nov 23 10:45 src
 &lt;p&gt;PlatformIO manages a &lt;code&gt;platformio.ini&lt;/code&gt; file where additional settings can be made as well as a few extras,e.g., a &lt;code&gt;.gitignore&lt;/code&gt;, TravisCI configuration and CMake files. &lt;code&gt;lib/&lt;/code&gt; and
 &lt;code&gt;src/&lt;/code&gt; are empty, so let&amp;rsquo;s add a simple sketch.&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;src/main.cpp&lt;/code&gt;:&lt;/p&gt;
+&lt;p&gt;Create a file &lt;code&gt;src/main.cpp&lt;/code&gt; and place to following contents in it:&lt;/p&gt;
 &lt;pre class="highlight cpp"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
 2
 3
@@ -721,9 +718,7 @@ drwxrwxr-x 2 ubuntu ubuntu 4096 Nov 23 10:45 src
 8
 9
 10
-11
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;
-&lt;span class="cp"&gt;#include &amp;lt;arduino.h&amp;gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;arduino.h&amp;gt;
 &lt;/span&gt;
 &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;setup&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
     &lt;span class="n"&gt;Serial&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;begin&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;9600&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
@@ -735,7 +730,7 @@ drwxrwxr-x 2 ubuntu ubuntu 4096 Nov 23 10:45 src
 &lt;span class="p"&gt;}&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;PlatformIO&amp;rsquo;s &lt;code&gt;run&lt;/code&gt; command takes care of the build:&lt;/p&gt;
+&lt;p&gt;PlatformIO&amp;rsquo;s &lt;code&gt;run&lt;/code&gt; command takes care of the whole build process:&lt;/p&gt;
 &lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
 2
 3
@@ -924,15 +919,17 @@ Commands:
 3
 4
 5
+6
 &lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;pio lib search advancedserial
 Found 1 libraries:
 
 &lt;span class="o"&gt;[&lt;/span&gt; ID  &lt;span class="o"&gt;]&lt;/span&gt; Name             Compatibility         &lt;span class="s2"&gt;"Authors"&lt;/span&gt;: Description
--------------------------------------------------------------------------------------------------------------------------[1095 &lt;span class="o"&gt;]&lt;/span&gt; advancedSerial   arduino, atmelavr, atmelsam, espressif8266, intel_arc32, teensy &lt;span class="s2"&gt;"Vasily Klenov"&lt;/span&gt;: An Arduino library with additions to vanilla Serial.print&lt;span class="o"&gt;()&lt;/span&gt;. Chainable methods and verbosity levels. Suitable &lt;span class="k"&gt;for &lt;/span&gt;debug messages.
+-------------------------------------------------------------------------------------------------------------------------
+&lt;span class="o"&gt;[&lt;/span&gt;1095 &lt;span class="o"&gt;]&lt;/span&gt; advancedSerial   arduino, atmelavr, atmelsam, espressif8266, intel_arc32, teensy &lt;span class="s2"&gt;"Vasily Klenov"&lt;/span&gt;: An Arduino library with additions to vanilla Serial.print&lt;span class="o"&gt;()&lt;/span&gt;. Chainable methods and verbosity levels. Suitable &lt;span class="k"&gt;for &lt;/span&gt;debug messages.
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
 &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;The compatibility column tells me that it should work on my ESP boards, so i install it using:&lt;/p&gt;
-&lt;pre class="highlight shell"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
+&lt;pre class="highlight plaintext"&gt;&lt;code&gt;&lt;table class="rouge-table"&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class="rouge-gutter gl"&gt;&lt;pre class="lineno"&gt;1
 2
 3
 4
@@ -940,13 +937,15 @@ Found 1 libraries:
 6
 7
 8
-&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;&lt;span class="gp"&gt;$ &lt;/span&gt;pio lib install advancedserial
+9
+&lt;/pre&gt;&lt;/td&gt;&lt;td class="rouge-code"&gt;&lt;pre&gt;$ pio lib install advancedserial
+
 Library Storage: nodemcu2/.piolibdeps
-Looking &lt;span class="k"&gt;for &lt;/span&gt;advancedserial library &lt;span class="k"&gt;in &lt;/span&gt;registry
+Looking for advancedserial library in registry
 Found: http://platformio.org/lib/show/1095/advancedSerial
-LibraryManager: Installing &lt;span class="nv"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1095
-Downloading  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="c"&gt;####################################]  100%&lt;/span&gt;
-Unpacking  &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="c"&gt;####################################]  100%&lt;/span&gt;
+LibraryManager: Installing id=1095
+Downloading  [####################################]  100%
+Unpacking  [####################################]  100%
 advancedSerial @ 1.2.3 has been successfully installed!
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;
 &lt;/code&gt;&lt;/pre&gt;
